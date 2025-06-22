@@ -37,7 +37,7 @@ export default function UserImportForm() {
         </select>
         <input
           type="file"
-          accept=".csv"
+          accept=".csv, .xls, .xlsx"
           onChange={e => setFile(e.target.files?.[0] || null)}
           className="border rounded px-3 py-2"
           required
@@ -53,7 +53,13 @@ export default function UserImportForm() {
       </button>
      </div>
       {message && <div className="text-sm text-center mt-2">{message}</div>}
-      <div className="text-xs text-gray-500 mt-2">CSV must have columns: <b>email,password</b></div>
+      <div className="text-xs text-gray-500 mt-2">
+        {role === "STUDENT" ? (
+          <>File must have columns: <b>email, password, name, department, batch, studentId</b></>
+        ) : (
+          <>File must have columns: <b>email, password, name, department, designation</b></>
+        )}
+      </div>
     </form>
   );
 }
