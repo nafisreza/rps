@@ -1,5 +1,15 @@
 "use client";
 import { useState, useEffect } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import { toast } from "sonner";
 
 type Department = { id: string; name: string };
 
@@ -14,18 +24,16 @@ export default function UserCreateForm() {
   const [designation, setDesignation] = useState("");
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
 
   useEffect(() => {
     fetch("/api/departments")
-      .then(res => res.json())
-      .then(data => setDepartments(data.departments || []));
+      .then((res) => res.json())
+      .then((data) => setDepartments(data.departments || []));
   }, []);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
-    setMessage("");
     const body: any = { email, password, role, name, departmentId };
     if (role === "STUDENT") {
       body.batch = batch;
@@ -41,7 +49,7 @@ export default function UserCreateForm() {
     });
     setLoading(false);
     if (res.ok) {
-      setMessage("User created successfully!");
+      toast.success("User created successfully!");
       setEmail("");
       setPassword("");
       setName("");
@@ -50,99 +58,141 @@ export default function UserCreateForm() {
       setStudentId("");
       setDesignation("");
     } else {
-      setMessage("Failed to create user.");
+      toast.error("Failed to create user.");
     }
   }
 
   return (
     <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-      <div className="flex gap-4">
-        <select value={role} onChange={e => setRole(e.target.value)} className="border rounded px-3 py-2">
-          <option value="STUDENT">Student</option>
-          <option value="TEACHER">Teacher</option>
-        </select>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          className="border rounded px-3 py-2 flex-1"
-          required
-        />
-        <input
-          type="text"
-          placeholder="Password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          className="border rounded px-3 py-2 flex-1"
-          required
-        />
-      </div>
-      <div className="flex gap-4">
-        <input
-          type="text"
-          placeholder="Full Name"
-          value={name}
-          onChange={e => setName(e.target.value)}
-          className="border rounded px-3 py-2 flex-1"
-          required
-        />
-        <select
-          value={departmentId}
-          onChange={e => setDepartmentId(e.target.value)}
-          className="border rounded px-3 py-2 flex-1"
-          required
-        >
-          <option value="">Select Department</option>
-          {departments.map((d) => (
-            <option key={d.id} value={d.id}>{d.name}</option>
-          ))}
-        </select>
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col">
+          <label htmlFor="role" className="mb-1 text-sm font-medium">
+            Role
+          </label>
+          <Select value={role} onValueChange={setRole}>
+            <SelectTrigger id="role" className="w-full">
+              <SelectValue placeholder="Select role" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="STUDENT">Student</SelectItem>
+              <SelectItem value="TEACHER">Teacher</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex flex-col">
+          <label htmlFor="name" className="mb-1 text-sm font-medium">
+            Full Name
+          </label>
+          <Input
+            id="name"
+            type="text"
+            placeholder="John Doe"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+        </div>
+        <div className="flex flex-col">
+          <label htmlFor="email" className="mb-1 text-sm font-medium">
+            Email
+          </label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="user@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <div className="flex flex-col">
+          <label htmlFor="password" className="mb-1 text-sm font-medium">
+            Password
+          </label>
+          <Input
+            id="password"
+            type="text"
+            placeholder="strongPassword123"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        <div className="flex flex-col">
+          <label htmlFor="department" className="mb-1 text-sm font-medium">
+            Department
+          </label>
+          <Select value={departmentId} onValueChange={setDepartmentId}>
+            <SelectTrigger id="department" className="w-full">
+              <SelectValue placeholder="Select department" />
+            </SelectTrigger>
+            <SelectContent>
+              {departments.map((d) => (
+                <SelectItem key={d.id} value={d.id}>
+                  {d.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
         {role === "STUDENT" && (
           <>
-            <input
-              type="text"
-              placeholder="Batch (e.g. 2022)"
-              value={batch}
-              onChange={e => setBatch(e.target.value)}
-              className="border rounded px-3 py-2 flex-1"
-              required
-            />
-            <input
-              type="text"
-              placeholder="Student ID"
-              value={studentId}
-              onChange={e => setStudentId(e.target.value)}
-              className="border rounded px-3 py-2 flex-1"
-              required
-            />
+            <div className="flex flex-col">
+              <label htmlFor="batch" className="mb-1 text-sm font-medium">
+                Batch
+              </label>
+              <Input
+                id="batch"
+                type="text"
+                placeholder="e.g. 2022"
+                value={batch}
+                onChange={(e) => setBatch(e.target.value)}
+                required
+              />
+            </div>
+            <div className="flex flex-col">
+              <label htmlFor="studentId" className="mb-1 text-sm font-medium">
+                Student ID
+              </label>
+              <Input
+                id="studentId"
+                type="text"
+                placeholder="e.g. 220042168"
+                value={studentId}
+                onChange={(e) => setStudentId(e.target.value)}
+                required
+              />
+            </div>
           </>
         )}
         {role === "TEACHER" && (
-          <select
-            value={designation}
-            onChange={e => setDesignation(e.target.value)}
-            className="border rounded px-3 py-2 flex-1"
-            required
-          >
-            <option value="">Select Designation</option>
-            <option value="PROFESSOR">Professor</option>
-            <option value="ASSISTANT_PROFESSOR">Assistant Professor</option>
-            <option value="ASSOCIATE_PROFESSOR">Associate Professor</option>
-            <option value="LECTURER">Lecturer</option>
-          </select>
+          <div className="flex flex-col">
+            <label htmlFor="designation" className="mb-1 text-sm font-medium">
+              Designation
+            </label>
+            <Select value={designation} onValueChange={setDesignation}>
+              <SelectTrigger id="designation" className="w-full">
+                <SelectValue placeholder="Select designation" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="PROFESSOR">Professor</SelectItem>
+                <SelectItem value="ASSISTANT_PROFESSOR">
+                  Assistant Professor
+                </SelectItem>
+                <SelectItem value="ASSOCIATE_PROFESSOR">
+                  Associate Professor
+                </SelectItem>
+                <SelectItem value="LECTURER">Lecturer</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         )}
       </div>
-        <div>
-              <button
-        type="submit"
-        className="bg-sky-700 text-white px-6 py-2 rounded hover:bg-sky-800 disabled:opacity-50"
-        disabled={loading}
-      >
-        {loading ? "Creating..." : "Create User"}
-      </button>
-        </div>
-      {message && <div className="text-sm text-center mt-2">{message}</div>}
+      <div>
+        <Button type="submit" disabled={loading}>
+          {loading ? "Creating..." : "Create User"}
+        </Button>
+      </div>
     </form>
   );
 }

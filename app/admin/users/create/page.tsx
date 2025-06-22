@@ -6,6 +6,7 @@ import AdminSidebar from "@/components/AdminSidebar";
 import AdminNavbar from "@/components/AdminNavbar";
 import UserCreateForm from "./UserCreateForm";
 import UserImportForm from "./UserImportForm";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 export default async function AdminUsersPage() {
   const session = await getServerSession(authOptions);
@@ -20,14 +21,24 @@ export default async function AdminUsersPage() {
       <div className="flex flex-1">
         <AdminSidebar />
         <main className="flex-1 p-8 overflow-y-auto">
-          <h1 className="text-2xl font-bold mb-6">User Management</h1>
-          <div className="bg-white rounded-xl shadow p-6 mb-8">
-            <h2 className="text-lg font-semibold mb-4">Create User</h2>
-            <UserCreateForm />
-          </div>
-          <div className="bg-white rounded-xl shadow p-6">
-            <h2 className="text-lg font-semibold mb-4">Import Users from CSV</h2>
-            <UserImportForm />
+          <h1 className="text-2xl font-bold mb-6">Create or Import Users</h1>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            <Card>
+              <CardHeader>
+                <CardTitle>Create User</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <UserCreateForm />
+              </CardContent>
+            </Card>
+            <Card className="h-auto">
+              <CardHeader>
+                <CardTitle>Import Users from CSV or Excel file</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <UserImportForm />
+              </CardContent>
+            </Card>
           </div>
         </main>
       </div>
