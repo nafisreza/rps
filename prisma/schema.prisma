@@ -52,16 +52,9 @@ model Teacher {
   department  Department @relation(fields: [departmentId], references: [id])
   departmentId String
   email       String   @unique
-  designation Designation
+  designation String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-}
-
-enum Designation {
-  PROFESSOR
-  ASSISTANT_PROFESSOR
-  ASSOCIATE_PROFESSOR
-  LECTURER
 }
 
 model Department {
