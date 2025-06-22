@@ -58,7 +58,18 @@ export default function UserCreateForm() {
       setStudentId("");
       setDesignation("");
     } else {
-      toast.error("Failed to create user.");
+      let errorMsg = "Failed to create user.";
+      try {
+        const data = await res.json();
+        if (data?.e?.code === "P2002") {
+          if (data?.e?.meta?.target?.includes("email"))
+            errorMsg = "Email is already registered.";
+          else if (data?.e?.meta?.target?.includes("studentId"))
+            errorMsg = "Student ID is already registered.";
+          else errorMsg = "Duplicate value for a unique field.";
+        } else if (data?.error) errorMsg = data.error;
+      } catch {}
+      toast.error(errorMsg)
     }
   }
 
