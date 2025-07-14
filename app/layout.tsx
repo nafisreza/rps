@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "IUT Result Processing System",
+  title: "Result Processing System",
   description:
     "A comprehensive web-based platform for university result processing, management, and analytics.",
 };
