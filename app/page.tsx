@@ -36,7 +36,7 @@ export default function Home() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="bg-white shadow-xl rounded-xl p-10 w-full max-w-md">
         <h2 className="text-3xl font-bold text-center mb-6 text-indigo-700">
-          IUT Result Processing System
+          Result Processing System
         </h2>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
@@ -76,7 +76,7 @@ export default function Home() {
           </button>
         </form>
         <div className="mt-8 text-center text-xs text-gray-400">
-          &copy; {new Date().getFullYear()} IUT Result Processing System
+          &copy; {new Date().getFullYear()} Result Processing System
         </div>
       </div>
     </div>
