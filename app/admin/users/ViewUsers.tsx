@@ -37,7 +37,7 @@ import {
 import { toast } from "sonner";
 
 export default function ViewUsers() {
-  const [role, setRole] = useState("STUDENT");
+  const [role, setRole] = useState("student");
   const [department, setDepartment] = useState("");
   const [batch, setBatch] = useState("");
   const [designation, setDesignation] = useState("");
@@ -51,12 +51,12 @@ export default function ViewUsers() {
     setLoading(true);
     let url = `/api/admin/users?role=${role}`;
     if (department) url += `&department=${department}`;
-    if (batch && role === "STUDENT") url += `&batch=${batch}`;
-    if (designation && role === "TEACHER") url += `&designation=${designation}`;
+    if (batch && role === "student") url += `&batch=${batch}`;
+    if (designation && role === "teacher") url += `&designation=${designation}`;
     fetch(url)
       .then((res) => res.json())
       .then((data) => {
-        setUsers(role === "STUDENT" ? data.students : data.teachers);
+        setUsers(role === "student" ? data.students : data.teachers);
         setLoading(false);
       });
   }, [role, department, batch, designation]);
@@ -77,13 +77,13 @@ export default function ViewUsers() {
       // Refresh list
       let url = `/api/admin/users?role=${role}`;
       if (department) url += `&department=${department}`;
-      if (batch && role === "STUDENT") url += `&batch=${batch}`;
+      if (batch && role === "student") url += `&batch=${batch}`;
       if (designation && role === "TEACHER")
         url += `&designation=${designation}`;
       fetch(url)
         .then((res) => res.json())
         .then((data) => {
-          setUsers(role === "STUDENT" ? data.students : data.teachers);
+          setUsers(role === "student" ? data.students : data.teachers);
           setLoading(false);
         });
     } catch {
@@ -120,13 +120,13 @@ export default function ViewUsers() {
       // Refresh list
       let url = `/api/admin/users?role=${role}`;
       if (department) url += `&department=${department}`;
-      if (batch && role === "STUDENT") url += `&batch=${batch}`;
-      if (designation && role === "TEACHER")
+      if (batch && role === "student") url += `&batch=${batch}`;
+      if (designation && role === "teacher")
         url += `&designation=${designation}`;
       fetch(url)
         .then((res) => res.json())
         .then((data) => {
-          setUsers(role === "STUDENT" ? data.students : data.teachers);
+          setUsers(role === "student" ? data.students : data.teachers);
           setLoading(false);
         });
     } catch {
@@ -143,8 +143,8 @@ export default function ViewUsers() {
             <SelectValue placeholder="Role" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="STUDENT">Students</SelectItem>
-            <SelectItem value="TEACHER">Teachers</SelectItem>
+            <SelectItem value="student">Students</SelectItem>
+            <SelectItem value="teacher">Teachers</SelectItem>
           </SelectContent>
         </Select>
         <Input
@@ -153,7 +153,7 @@ export default function ViewUsers() {
           onChange={(e) => setDepartment(e.target.value)}
           className="w-[180px]"
         />
-        {role === "STUDENT" && (
+        {role === "student" && (
           <Input
             placeholder="Batch"
             value={batch}
@@ -161,7 +161,7 @@ export default function ViewUsers() {
             className="w-[120px]"
           />
         )}
-        {role === "TEACHER" && (
+        {role === "teacher" && (
           <Input
             placeholder="Designation"
             value={designation}
@@ -179,9 +179,9 @@ export default function ViewUsers() {
               <TableHead>Name</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Department</TableHead>
-              {role === "STUDENT" && <TableHead>Batch</TableHead>}
-              {role === "STUDENT" && <TableHead>Student ID</TableHead>}
-              {role === "TEACHER" && <TableHead>Designation</TableHead>}
+              {role === "student" && <TableHead>Batch</TableHead>}
+              {role === "student" && <TableHead>Student ID</TableHead>}
+              {role === "teacher" && <TableHead>Designation</TableHead>}
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -191,9 +191,9 @@ export default function ViewUsers() {
                 <TableCell>{u.name}</TableCell>
                 <TableCell>{u.email}</TableCell>
                 <TableCell>{u.department?.name}</TableCell>
-                {role === "STUDENT" && <TableCell>{u.batch}</TableCell>}
-                {role === "STUDENT" && <TableCell>{u.studentId}</TableCell>}
-                {role === "TEACHER" && <TableCell>{u.designation}</TableCell>}
+                {role === "student" && <TableCell>{u.batch}</TableCell>}
+                {role === "student" && <TableCell>{u.studentId}</TableCell>}
+                {role === "teacher" && <TableCell>{u.designation}</TableCell>}
                 <TableCell>
                   <Button
                     variant="outline"
@@ -258,7 +258,7 @@ export default function ViewUsers() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              Edit {role === "STUDENT" ? "Student" : "Teacher"}
+              Edit {role === "student" ? "Student" : "Teacher"}
             </DialogTitle>
           </DialogHeader>
           <form
@@ -300,7 +300,7 @@ export default function ViewUsers() {
               placeholder="Department"
               required
             />
-            {role === "STUDENT" && (
+            {role === "student" && (
               <>
                 <Input
                   value={editData.batch || ""}
@@ -320,7 +320,7 @@ export default function ViewUsers() {
                 />
               </>
             )}
-            {role === "TEACHER" && (
+            {role === "teacher" && (
               <Input
                 value={editData.designation || ""}
                 onChange={(e) =>
