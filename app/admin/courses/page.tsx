@@ -37,6 +37,7 @@ export default function AdminCoursesPage() {
   const [editForm, setEditForm] = useState<Course | null>(null);
   const [teachers, setTeachers] = useState<{ id: string; name: string }[]>([]);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [departments, setDepartments] = useState<{ id: string; name: string }[]>([]);
   const router = useRouter();
 
   useEffect(() => {
