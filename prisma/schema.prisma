@@ -55,6 +55,7 @@ model Teacher {
   designation String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  courses     Course[]
 }
 
 model Department {
@@ -70,6 +71,9 @@ model Course {
   code         String   @unique
   name         String
   credit       Float
+  semester     String
   department   Department @relation(fields: [departmentId], references: [id])
   departmentId String
+  teacher      Teacher?  @relation(fields: [teacherId], references: [id])
+  teacherId    String?
 }
