@@ -34,11 +34,14 @@ model Student {
   id          String   @id @default(uuid())
   user        User     @relation(fields: [userId], references: [id])
   userId      String   @unique
-  studentId   String   @unique // Student ID field
+  studentId   String   @unique 
   name        String
   department  Department @relation(fields: [departmentId], references: [id])
   departmentId String
+  program     Program    @relation(fields: [programId], references: [id])
+  programId   String
   batch       String
+  currentSemester Int @default(1)
   email       String   @unique
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -61,9 +64,19 @@ model Teacher {
 model Department {
   id        String   @id @default(uuid())
   name      String   @unique
+  programs  Program[]
   students  Student[]
   teachers  Teacher[]
   courses   Course[]
+}
+
+model Program {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  department  Department @relation(fields: [departmentId], references: [id])
+  departmentId String
+  students    Student[]
+  courses     Course[]
 }
 
 model Course {
@@ -71,9 +84,11 @@ model Course {
   code         String   @unique
   name         String
   credit       Float
-  semester     String
+  semester     Int
   department   Department @relation(fields: [departmentId], references: [id])
   departmentId String
+  program      Program    @relation(fields: [programId], references: [id])
+  programId    String
   teacher      Teacher?  @relation(fields: [teacherId], references: [id])
   teacherId    String?
 }
