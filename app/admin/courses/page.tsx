@@ -25,8 +25,10 @@ type Course = {
   semester: string;
   departmentId: string;
   teacherId?: string;
+  programId?: string;
   department?: { name: string };
   teacher?: { name: string };
+  program?: { name: string };
 };
 
 export default function AdminCoursesPage() {
@@ -35,6 +37,17 @@ export default function AdminCoursesPage() {
   const [editCourse, setEditCourse] = useState<Course | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editForm, setEditForm] = useState<Course | null>(null);
+  const [programs, setPrograms] = useState<{ id: string; name: string }[]>([]);
+  useEffect(() => {
+    if (editForm && editForm.departmentId) {
+      fetch(`/api/departments?includePrograms=true&id=${editForm.departmentId}`)
+        .then((res) => res.json())
+        .then((data) => setPrograms(data.programs || []));
+    } else {
+      setPrograms([]);
+      setEditForm(f => f ? { ...f, programId: "" } : f);
+    }
+  }, [editForm?.departmentId]);
   const [teachers, setTeachers] = useState<{ id: string; name: string }[]>([]);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [departments, setDepartments] = useState<{ id: string; name: string }[]>([]);
@@ -117,6 +130,7 @@ export default function AdminCoursesPage() {
                   <th className="px-4 py-3 text-left font-semibold text-gray-700">Credit</th>
                   <th className="px-4 py-3 text-left font-semibold text-gray-700">Semester</th>
                   <th className="px-4 py-3 text-left font-semibold text-gray-700">Department</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-700">Program</th>
                   <th className="px-4 py-3 text-left font-semibold text-gray-700">Teacher</th>
                   <th className="px-4 py-3 text-left font-semibold text-gray-700">Actions</th>
                 </tr>
@@ -134,6 +148,7 @@ export default function AdminCoursesPage() {
                       <td className="px-4 py-2">{course.credit}</td>
                       <td className="px-4 py-2">{course.semester}</td>
                       <td className="px-4 py-2">{course.department?.name}</td>
+                      <td className="px-4 py-2">{course.program?.name || '-'}</td>
                       <td className="px-4 py-2">{course.teacher?.name || "-"}</td>
                       <td className="px-4 py-2 flex gap-2">
                         <Button size="sm" variant="outline" onClick={() => openEditModal(course)}>Edit</Button>
@@ -195,6 +210,19 @@ export default function AdminCoursesPage() {
                   <SelectContent>
                     {departments.map((dep) => (
                       <SelectItem key={dep.id} value={dep.id}>{dep.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="block mb-1">Program</label>
+                <Select value={editForm.programId || ""} onValueChange={value => setEditForm({ ...editForm, programId: value })} required>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder={programs.length ? "Select program" : "Select department first"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {programs.map((p) => (
+                      <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

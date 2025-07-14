@@ -5,23 +5,25 @@ const prisma = new PrismaClient();
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const role = searchParams.get("role");
-  const department = searchParams.get("department");
+  const departmentId = searchParams.get("departmentId");
+  const programId = searchParams.get("programId");
   const batch = searchParams.get("batch");
   const designation = searchParams.get("designation");
 
   if (role === "student") {
     const students = await prisma.student.findMany({
       where: {
-        department: department ? { name: department } : undefined,
+        departmentId: departmentId || undefined,
+        programId: programId || undefined,
         batch: batch ? batch : undefined,
       },
-      include: { user: true, department: true },
+      include: { user: true, department: true, program: true },
     });
     return NextResponse.json({ students });
   } else if (role === "teacher") {
     const teachers = await prisma.teacher.findMany({
       where: {
-        department: department ? { name: department } : undefined,
+        departmentId: departmentId || undefined,
         designation: designation ? designation : undefined,
       },
       include: { user: true, department: true },

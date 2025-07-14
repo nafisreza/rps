@@ -25,12 +25,25 @@ export default function UserCreateForm() {
   const [designation, setDesignation] = useState("");
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(false);
+  const [programs, setPrograms] = useState<{ id: string; name: string }[]>([]);
+  const [programId, setProgramId] = useState("");
 
   useEffect(() => {
     fetch("/api/departments")
       .then((res) => res.json())
       .then((data) => setDepartments(data.departments || []));
   }, []);
+
+  useEffect(() => {
+    if (role === "STUDENT" && departmentId) {
+      fetch(`/api/departments?includePrograms=true&id=${departmentId}`)
+        .then((res) => res.json())
+        .then((data) => setPrograms(data.programs || []));
+    } else {
+      setPrograms([]);
+      setProgramId("");
+    }
+  }, [role, departmentId]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -40,6 +53,7 @@ export default function UserCreateForm() {
       body.batch = batch;
       body.studentId = studentId;
       body.currentSemester = currentSemester;
+      body.programId = programId;
     }
     if (role === "TEACHER") {
       body.designation = designation;
@@ -59,6 +73,7 @@ export default function UserCreateForm() {
       setBatch("");
       setStudentId("");
       setDesignation("");
+      setProgramId("");
     } else {
       let errorMsg = "Failed to create user.";
       try {
@@ -71,7 +86,7 @@ export default function UserCreateForm() {
           else errorMsg = "Duplicate value for a unique field.";
         } else if (data?.error) errorMsg = data.error;
       } catch {}
-      toast.error(errorMsg)
+      toast.error(errorMsg);
     }
   }
 
@@ -151,6 +166,30 @@ export default function UserCreateForm() {
         {role === "STUDENT" && (
           <>
             <div className="flex flex-col">
+              <label htmlFor="program" className="mb-1 text-sm font-medium">
+                Program
+              </label>
+              <Select value={programId} onValueChange={setProgramId}>
+                <SelectTrigger id="program" className="w-full">
+                  <SelectValue
+                    placeholder={
+                      programs.length
+                        ? "Select program"
+                        : "Select department first"
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {programs.map((p) => (
+                    <SelectItem key={p.id} value={p.id}>
+                      {p.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex flex-col">
               <label htmlFor="batch" className="mb-1 text-sm font-medium">
                 Batch
               </label>
@@ -177,7 +216,10 @@ export default function UserCreateForm() {
               />
             </div>
             <div className="flex flex-col">
-              <label htmlFor="currentSemester" className="mb-1 text-sm font-medium">
+              <label
+                htmlFor="currentSemester"
+                className="mb-1 text-sm font-medium"
+              >
                 Semester
               </label>
               <Input

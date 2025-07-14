@@ -39,9 +39,29 @@ import { toast } from "sonner";
 export default function ViewUsers() {
   const [role, setRole] = useState("student");
   const [department, setDepartment] = useState("");
+  const [program, setProgram] = useState("");
   const [batch, setBatch] = useState("");
   const [designation, setDesignation] = useState("");
   const [users, setUsers] = useState([]);
+  const [programs, setPrograms] = useState<{ id: string; name: string }[]>([]);
+  const [departments, setDepartments] = useState<{ id: string; name: string }[]>([]);
+  useEffect(() => {
+    fetch("/api/departments")
+      .then((res) => res.json())
+      .then((data) => setDepartments(data.departments || []));
+  }, []);
+
+  useEffect(() => {
+    if (department) {
+      fetch(`/api/departments?includePrograms=true&id=${department}`)
+        .then((res) => res.json())
+        .then((data) => setPrograms(data.programs || []));
+      setProgram("");
+    } else {
+      setPrograms([]);
+      setProgram("");
+    }
+  }, [department]);
   const [loading, setLoading] = useState(false);
   const [editUser, setEditUser] = useState<any>(null);
   const [editData, setEditData] = useState<any>({});
@@ -50,7 +70,8 @@ export default function ViewUsers() {
   useEffect(() => {
     setLoading(true);
     let url = `/api/admin/users?role=${role}`;
-    if (department) url += `&department=${department}`;
+    if (department) url += `&departmentId=${department}`;
+    if (program && role === "student") url += `&programId=${program}`;
     if (batch && role === "student") url += `&batch=${batch}`;
     if (designation && role === "teacher") url += `&designation=${designation}`;
     fetch(url)
@@ -59,7 +80,7 @@ export default function ViewUsers() {
         setUsers(role === "student" ? data.students : data.teachers);
         setLoading(false);
       });
-  }, [role, department, batch, designation]);
+  }, [role, department, program, batch, designation]);
 
   async function handleDelete(userId: string) {
     setLoading(true);
@@ -96,7 +117,19 @@ export default function ViewUsers() {
   const closeModal = () => {
     setEditUser(null);
     setEditData({});
+    setPrograms([]);
   };
+
+  useEffect(() => {
+    if (editUser && role === "student" && (editData.departmentId || editData.department?.id)) {
+      const deptId = editData.departmentId || editData.department?.id;
+      fetch(`/api/departments?includePrograms=true&id=${deptId}`)
+        .then((res) => res.json())
+        .then((data) => setPrograms(data.programs || []));
+    } else {
+      setPrograms([]);
+    }
+  }, [editUser, role, editData.departmentId, editData.department]);
 
   async function handleEditSave() {
     setLoading(true);
@@ -147,12 +180,37 @@ export default function ViewUsers() {
             <SelectItem value="teacher">Teachers</SelectItem>
           </SelectContent>
         </Select>
-        <Input
-          placeholder="Department"
-          value={department}
-          onChange={(e) => setDepartment(e.target.value)}
-          className="w-[180px]"
-        />
+        <Select
+          value={department || 'all'}
+          onValueChange={v => setDepartment(v === 'all' ? '' : v)}
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select department" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Department</SelectItem>
+            {departments.map((dep) => (
+              <SelectItem key={dep.id} value={dep.id}>{dep.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {role === "student" && (
+          <Select
+            value={program || 'all'}
+            onValueChange={v => setProgram(v === 'all' ? '' : v)}
+            disabled={!department}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select program" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Program</SelectItem>
+              {programs.map((p) => (
+                <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
         {role === "student" && (
           <Input
             placeholder="Batch"
@@ -162,12 +220,21 @@ export default function ViewUsers() {
           />
         )}
         {role === "teacher" && (
-          <Input
-            placeholder="Designation"
-            value={designation}
-            onChange={(e) => setDesignation(e.target.value)}
-            className="w-[160px]"
-          />
+          <Select
+            value={designation || 'all'}
+            onValueChange={v => setDesignation(v === 'all' ? '' : v)}
+          >
+            <SelectTrigger className="w-[160px]">
+              <SelectValue placeholder="Select designation" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Designation</SelectItem>
+              <SelectItem value="Professor">Professor</SelectItem>
+              <SelectItem value="Associate Professor">Associate Professor</SelectItem>
+              <SelectItem value="Assistant Professor">Assistant Professor</SelectItem>
+              <SelectItem value="Lecturer">Lecturer</SelectItem>
+            </SelectContent>
+          </Select>
         )}
       </div>
       {loading ? (
@@ -179,6 +246,7 @@ export default function ViewUsers() {
               <TableHead>Name</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Department</TableHead>
+              {role === "student" && <TableHead>Program</TableHead>}
               {role === "student" && <TableHead>Batch</TableHead>}
               {role === "student" && <TableHead>Student ID</TableHead>}
               {role === "teacher" && <TableHead>Designation</TableHead>}
@@ -191,6 +259,7 @@ export default function ViewUsers() {
                 <TableCell>{u.name}</TableCell>
                 <TableCell>{u.email}</TableCell>
                 <TableCell>{u.department?.name}</TableCell>
+                {role === "student" && <TableCell>{u.program?.name || '-'}</TableCell>}
                 {role === "student" && <TableCell>{u.batch}</TableCell>}
                 {role === "student" && <TableCell>{u.studentId}</TableCell>}
                 {role === "teacher" && <TableCell>{u.designation}</TableCell>}
@@ -285,23 +354,35 @@ export default function ViewUsers() {
               placeholder="Email"
               required
             />
-            <Input
-              value={editData.department?.name || editData.department || ""}
-              onChange={(e) =>
-                setEditData({
-                  ...editData,
-                  department: {
-                    ...editData.department,
-                    name: e.target.value,
-                  },
-                  departmentId: undefined,
-                })
-              }
-              placeholder="Department"
+            <Select
+              value={editData.departmentId || editData.department?.id || ""}
+              onValueChange={(value) => setEditData({ ...editData, departmentId: value })}
               required
-            />
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select department" />
+              </SelectTrigger>
+              <SelectContent>
+                {departments.map((dep) => (
+                  <SelectItem key={dep.id} value={dep.id}>{dep.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             {role === "student" && (
               <>
+                <Select
+                  value={editData.programId || ""}
+                  onValueChange={(v) => setEditData({ ...editData, programId: v })}
+                >
+                  <SelectTrigger id="program" className="w-full">
+                    <SelectValue placeholder={programs.length ? "Select program" : "Select department first"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {programs.map((p) => (
+                      <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <Input
                   value={editData.batch || ""}
                   onChange={(e) =>

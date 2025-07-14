@@ -26,9 +26,11 @@ export default function CreateCoursePage() {
     semester: "",
     departmentId: "",
     teacherId: "",
+    programId: "",
   });
   const [departments, setDepartments] = useState<Department[]>([]);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [programs, setPrograms] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -41,6 +43,17 @@ export default function CreateCoursePage() {
       .then((data) => setTeachers(data.teachers || []));
   }, []);
 
+  useEffect(() => {
+    if (form.departmentId) {
+      fetch(`/api/departments?includePrograms=true&id=${form.departmentId}`)
+        .then((res) => res.json())
+        .then((data) => setPrograms(data.programs || []));
+    } else {
+      setPrograms([]);
+      setForm(f => ({ ...f, programId: "" }));
+    }
+  }, [form.departmentId]);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -50,6 +63,7 @@ export default function CreateCoursePage() {
       body: JSON.stringify({
         ...form,
         credit: Number(form.credit),
+        semester: Number(form.semester),
       }),
     });
     const data = await res.json();
@@ -81,7 +95,7 @@ export default function CreateCoursePage() {
             </div>
             <div>
               <label className="block mb-1">Semester</label>
-              <Input value={form.semester} onChange={e => setForm({ ...form, semester: e.target.value })} required />
+              <Input value={form.semester} type="number" onChange={e => setForm({ ...form, semester: e.target.value })} required />
             </div>
             <div>
               <label className="block mb-1">Department</label>
@@ -92,6 +106,19 @@ export default function CreateCoursePage() {
                 <SelectContent>
                   {departments.map((dep) => (
                     <SelectItem key={dep.id} value={dep.id}>{dep.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="block mb-1">Program</label>
+              <Select value={form.programId} onValueChange={value => setForm({ ...form, programId: value })} required>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder={programs.length ? "Select program" : "Select department first"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {programs.map((p) => (
+                    <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>

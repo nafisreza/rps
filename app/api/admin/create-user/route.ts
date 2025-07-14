@@ -6,8 +6,8 @@ const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password, role, name, departmentId, batch, studentId, currentSemester, designation } = await req.json();
-    if (!email || !password || !role || !name || !departmentId || (role === "STUDENT" && (!batch || !studentId)) || (role === "TEACHER" && !designation)) {
+    const { email, password, role, name, departmentId, batch, studentId, currentSemester, designation, programId } = await req.json();
+    if (!email || !password || !role || !name || !departmentId || (role === "STUDENT" && (!batch || !studentId || !currentSemester || !programId)) || (role === "TEACHER" && !designation)) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
     const hashed = await bcrypt.hash(password, 10);
@@ -24,6 +24,7 @@ export async function POST(req: NextRequest) {
           batch,
           email,
           currentSemester: currentSemester ?? 1,
+          programId,
         },
       });
     } else if (role === "TEACHER") {

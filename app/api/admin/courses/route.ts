@@ -8,6 +8,7 @@ export async function GET(req: NextRequest) {
     include: {
       department: true,
       teacher: true,
+      program: true,
     },
     orderBy: { name: "asc" },
   });
@@ -26,6 +27,7 @@ export async function POST(req: NextRequest) {
         semester: data.semester,
         departmentId: data.departmentId,
         teacherId: data.teacherId || null,
+        programId: data.programId,
       },
     });
     return NextResponse.json({ course });
@@ -47,6 +49,7 @@ export async function PATCH(req: NextRequest) {
         semester: data.semester,
         departmentId: data.departmentId,
         teacherId: data.teacherId || null,
+        programId: data.programId,
       },
     });
     return NextResponse.json({ course });
