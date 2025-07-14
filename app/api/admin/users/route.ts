@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
   const batch = searchParams.get("batch");
   const designation = searchParams.get("designation");
 
-  if (role === "STUDENT") {
+  if (role === "student") {
     const students = await prisma.student.findMany({
       where: {
         department: department ? { name: department } : undefined,
@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
       include: { user: true, department: true },
     });
     return NextResponse.json({ students });
-  } else if (role === "TEACHER") {
+  } else if (role === "teacher") {
     const teachers = await prisma.teacher.findMany({
       where: {
         department: department ? { name: department } : undefined,
