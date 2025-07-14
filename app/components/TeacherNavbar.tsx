@@ -10,7 +10,7 @@ const TeacherNavbar: FC<{ user: SessionUser | undefined }> = ({ user }) => {
   return (
     <nav className="h-16 w-full flex items-center justify-between px-8 bg-white shadow border-b border-gray-200 z-10">
       <div className="flex items-center gap-4">
-        <Image src="/next.svg" alt="Logo" width={32} height={32} />
+        {/* <Image src="/next.svg" alt="Logo" width={32} height={32} /> */}
         <span className="font-bold text-xl text-green-700">IUT RPS</span>
         <span className="ml-6 text-gray-400 text-sm">Teacher &gt; Dashboard</span>
       </div>
