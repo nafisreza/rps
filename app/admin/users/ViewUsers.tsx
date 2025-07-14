@@ -318,6 +318,17 @@ export default function ViewUsers() {
                   placeholder="Student ID"
                   required
                 />
+                <Input
+                  type="number"
+                  min={1}
+                  max={8}
+                  value={editData.currentSemester || 1}
+                  onChange={(e) =>
+                    setEditData({ ...editData, currentSemester: Number(e.target.value) })
+                  }
+                  placeholder="Semester"
+                  required
+                />
               </>
             )}
             {role === "teacher" && (
