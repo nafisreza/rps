@@ -20,7 +20,7 @@ export async function PATCH(req: NextRequest, props: { params: Promise<{ id: str
   }
   try {
     // Update logic for student or teacher based on data.role
-    if (data.role === "STUDENT") {
+    if (data.role.toLowerCase() === "student") {
       await prisma.student.update({
         where: { userId: params.id },
         data: {
@@ -29,9 +29,10 @@ export async function PATCH(req: NextRequest, props: { params: Promise<{ id: str
           studentId: data.studentId,
           email: data.email,
           departmentId,
+          currentSemester: data.currentSemester,
         },
       });
-    } else if (data.role === "TEACHER") {
+    } else if (data.role.toLowerCase() === "teacher") {
       await prisma.teacher.update({
         where: { userId: params.id },
         data: {
