@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password, role, name, departmentId, batch, studentId, designation } = await req.json();
+    const { email, password, role, name, departmentId, batch, studentId, currentSemester, designation } = await req.json();
     if (!email || !password || !role || !name || !departmentId || (role === "STUDENT" && (!batch || !studentId)) || (role === "TEACHER" && !designation)) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
@@ -23,6 +23,7 @@ export async function POST(req: NextRequest) {
           departmentId,
           batch,
           email,
+          currentSemester: currentSemester ?? 1,
         },
       });
     } else if (role === "TEACHER") {
