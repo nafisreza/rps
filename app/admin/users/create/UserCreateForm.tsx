@@ -21,6 +21,7 @@ export default function UserCreateForm() {
   const [departmentId, setDepartmentId] = useState("");
   const [batch, setBatch] = useState("");
   const [studentId, setStudentId] = useState("");
+  const [currentSemester, setCurrentSemester] = useState(0);
   const [designation, setDesignation] = useState("");
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(false);
@@ -38,6 +39,7 @@ export default function UserCreateForm() {
     if (role === "STUDENT") {
       body.batch = batch;
       body.studentId = studentId;
+      body.currentSemester = currentSemester;
     }
     if (role === "TEACHER") {
       body.designation = designation;
@@ -122,7 +124,7 @@ export default function UserCreateForm() {
           </label>
           <Input
             id="password"
-            type="text"
+            type="password"
             placeholder="strongPassword123"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -171,6 +173,21 @@ export default function UserCreateForm() {
                 placeholder="e.g. 220042168"
                 value={studentId}
                 onChange={(e) => setStudentId(e.target.value)}
+                required
+              />
+            </div>
+            <div className="flex flex-col">
+              <label htmlFor="currentSemester" className="mb-1 text-sm font-medium">
+                Semester
+              </label>
+              <Input
+                id="currentSemester"
+                type="number"
+                min={1}
+                max={8}
+                placeholder="e.g. 4"
+                value={currentSemester}
+                onChange={(e) => setCurrentSemester(Number(e.target.value))}
                 required
               />
             </div>
