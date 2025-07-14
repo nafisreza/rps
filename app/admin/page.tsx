@@ -1,22 +1,7 @@
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/api/auth/[...nextauth]/route";
-import { redirect } from "next/navigation";
-import { SessionUser } from "@/types/session";
-import AdminSidebar from "@/components/AdminSidebar";
-import AdminNavbar from "@/components/AdminNavbar";
-
 export default async function AdminDashboard() {
-  const session = await getServerSession(authOptions);
-  const user = session?.user as SessionUser | undefined;
-  const role = user?.role;
-  if (!session || role !== "ADMIN") {
-    redirect("/");
-  }
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <AdminNavbar user={user} />
+    <div className="flex flex-col bg-gray-50">
       <div className="flex flex-1">
-        <AdminSidebar />
         <main className="flex-1 p-8 overflow-y-auto">
           <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
