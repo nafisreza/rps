@@ -1,0 +1,4 @@
+email,password,name,department,designation
+teacher1@iut.edu,pass123,Teacher One,CSE,Professor
+teacher2@iut.edu,pass456,Teacher Two,EEE,Assistant Professor
+teacher3@iut.edu,pass789,Teacher Three,MPE,Lecturer
