@@ -2,6 +2,19 @@ import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
+export async function GET(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
+  const { id } = params;
+  try {
+    const user = await prisma.user.findUnique({ where: { id } });
+    const teacher = await prisma.teacher.findUnique({ where: { userId: id } });
+    const student = await prisma.student.findUnique({ where: { userId: id } });
+    return NextResponse.json({ user, teacher, student });
+  } catch (err) {
+    return NextResponse.json({ user: null, teacher: null, student: null });
+  }
+}
+
 export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   const data = await req.json();
