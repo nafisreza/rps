@@ -1,0 +1,4 @@
+email,password,name,department,program,batch,studentId,currentSemester
+linus@iut-dhaka.edu,linus,Linus Torvalds,MPE,IPE,2023,230043168,2
+unclebob@iut-dhaka.edu,unclebob,Robert C. Martin,CSE,CSE,2022,220042169,4
+ada@iut-dhaka.edu,ada,Ada Lovelace,TVE,TE,2020,200046132,8

@@ -1,4 +1,0 @@
-email,password,name,department,program,batch,studentId,currentSemester
-student1@iut.edu,pass123,Student One,MPE,IPE,2022,220042101,3
-student2@iut.edu,pass456,Student Two,EEE,EEE,2021,210032102,5
-student3@iut.edu,pass789,Student Three,CSE,SWE,2023,230052103,1
