@@ -6,9 +6,26 @@ import { Table } from "@/components/ui/table";
 export default async function TeacherCoursesPage() {
   const session = await getServerSession(authOptions);
   const user = session?.user as SessionUser | undefined;
+  // Fetch teacher record for this user
+  let teacherId = undefined;
+  if (user?.role === "TEACHER" && user?.id) {
+    const teacherRes = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/users/${user.id}`
+    );
+    console.log("Fetching teacher data for user ID:", user.id);
+    let teacherData = null;
+    try {
+      teacherData = await teacherRes.json();
+      console.log("Teacher data:", teacherData);
+    } catch (err) {
+      console.log("Error parsing teacher data:", err);
+      teacherData = null;
+    }
+    teacherId = teacherData?.teacher?.id || user.id;
+  }
   // Fetch courses assigned to this teacher
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/courses?teacherId=${user?.id}`
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/courses?teacherId=${teacherId}`
   );
   const data = await res.json();
   const courses = data.courses || [];
@@ -35,12 +52,15 @@ export default async function TeacherCoursesPage() {
               <th className="px-4 py-3 text-left font-semibold text-gray-700">
                 Department
               </th>
+              <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                Program
+              </th>
             </tr>
           </thead>
           <tbody>
             {courses.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center">
+                <td colSpan={6} className="px-4 py-6 text-center">
                   No courses assigned.
                 </td>
               </tr>
@@ -54,6 +74,7 @@ export default async function TeacherCoursesPage() {
                   <td className="px-4 py-2">{course.credit}</td>
                   <td className="px-4 py-2">{course.semester}</td>
                   <td className="px-4 py-2">{course.department?.name}</td>
+                  <td className="px-4 py-2">{course.program?.name || "-"}</td>
                 </tr>
               ))
             )}
