@@ -2,7 +2,6 @@
 
 import { FC, useState } from "react";
 import { SessionUser } from "@/types/session";
-import Image from "next/image";
 import { signOut } from "next-auth/react";
 
 const TeacherNavbar: FC<{ user: SessionUser | undefined }> = ({ user }) => {
@@ -15,11 +14,7 @@ const TeacherNavbar: FC<{ user: SessionUser | undefined }> = ({ user }) => {
         <span className="ml-6 text-gray-400 text-sm">Teacher &gt; Dashboard</span>
       </div>
       <div className="flex items-center gap-4 relative">
-        <input
-          type="text"
-          placeholder="Search..."
-          className="px-3 py-1.5 rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-200 text-sm"
-        />
+        <span className="text-gray-800 text-base font-medium">Welcome, {(user?.email?.split("@")[0] || "Teacher")}</span>
         <button
           className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center focus:outline-none"
           onClick={() => setOpen((v) => !v)}

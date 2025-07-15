@@ -2,24 +2,20 @@
 
 import { FC, useState } from "react";
 import { SessionUser } from "@/types/session";
-import Image from "next/image";
 import { signOut } from "next-auth/react";
 
 const AdminNavbar: FC<{ user: SessionUser | undefined }> = ({ user }) => {
   const [open, setOpen] = useState(false);
+  // Get first name from user.name or user.email
+  const firstName = user?.email?.split("@")[0] || "Admin";
   return (
     <nav className="h-16 w-full flex items-center justify-between px-8 bg-white shadow border-b border-gray-200 z-10">
       <div className="flex items-center gap-4">
-        {/* <Image src="/next.svg" alt="Logo" width={32} height={32} /> */}
         <span className="font-bold text-xl text-indigo-700">IUT RPS</span>
         <span className="ml-6 text-gray-400 text-sm">Admin &gt; Dashboard</span>
       </div>
       <div className="flex items-center gap-4 relative">
-        <input
-          type="text"
-          placeholder="Search..."
-          className="px-3 py-1.5 rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-200 text-sm"
-        />
+        <span className="text-gray-800 text-base font-medium">Welcome, {firstName}</span>
         <button
           className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center focus:outline-none"
           onClick={() => setOpen((v) => !v)}
