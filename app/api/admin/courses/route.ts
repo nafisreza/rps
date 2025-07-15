@@ -4,7 +4,26 @@ const prisma = new PrismaClient();
 
 // GET: List all courses
 export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const departmentId = searchParams.get("departmentId");
+  const programId = searchParams.get("programId");
+  const semester = searchParams.get("semester");
+  const teacherId = searchParams.get("teacherId");
+  const credit = searchParams.get("credit");
+  const name = searchParams.get("name");
+  const code = searchParams.get("code");
+
+  const where: any = {};
+  if (departmentId) where.departmentId = departmentId;
+  if (programId) where.programId = programId;
+  if (semester) where.semester = Number(semester);
+  if (teacherId) where.teacherId = teacherId;
+  if (credit) where.credit = Number(credit);
+  if (name) where.name = { contains: name, mode: "insensitive" };
+  if (code) where.code = { contains: code, mode: "insensitive" };
+
   const courses = await prisma.course.findMany({
+    where,
     include: {
       department: true,
       teacher: true,
