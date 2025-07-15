@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
+import { sendUserWelcomeEmail } from "../../../../lib/email";
 
 const prisma = new PrismaClient();
 
@@ -38,6 +40,10 @@ export async function POST(req: NextRequest) {
         },
       });
     }
+
+    // Send welcome email with credentials
+    sendUserWelcomeEmail(email, password).catch(console.error);
+
     return NextResponse.json({ user });
   } catch (e: any) {
     return NextResponse.json({ error: "Failed to create user", e }, { status: 500 });
