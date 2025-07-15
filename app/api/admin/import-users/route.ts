@@ -48,9 +48,11 @@ export async function POST(req: NextRequest) {
       if (!record.email || !record.password || !record.name || !record.department) continue;
       const hashed = await bcrypt.hash(record.password, 10);
       if (role === "STUDENT") {
-        if (!record.batch || !record.studentId) continue;
+        if (!record.batch || !record.studentId || !record.program || !record.currentSemester) continue;
         const department = await prisma.department.findFirst({ where: { name: { equals: record.department, mode: "insensitive" } } });
         if (!department) continue;
+        const program = await prisma.program.findFirst({ where: { name: { equals: record.program, mode: "insensitive" }, departmentId: department.id } });
+        if (!program) continue;
         const user = await prisma.user.create({
           data: {
             email: String(record.email),
@@ -63,6 +65,8 @@ export async function POST(req: NextRequest) {
                 studentId: String(record.studentId),
                 email: String(record.email),
                 department: { connect: { id: department.id } },
+                program: { connect: { id: program.id } },
+                currentSemester: Number(record.currentSemester),
               },
             },
           },
