@@ -32,7 +32,7 @@ export default function UserImportForm() {
       toast.success("Users imported successfully!");
       setFile(null);
     } else {
-      toast.error("Failed to import users.");
+      toast.error("Duplicate emails or invalid data.");
     }
   }
 
@@ -63,9 +63,57 @@ export default function UserImportForm() {
       </div>
       <div className="text-xs text-gray-500 mt-2">
         {role === "STUDENT" ? (
-          <>File must have columns: <b>email, password, name, department, batch, studentId</b></>
+          <>
+            File must have columns:{" "}
+            <b>
+              email, password, name, studentId, department, program, semester,
+              batch
+            </b>
+          </>
         ) : (
-          <>File must have columns: <b>email, password, name, department, designation</b></>
+          <>
+            File must have columns:{" "}
+            <b>email, password, name, department, designation</b>
+          </>
+        )}
+      </div>
+            <div className="flex gap-4 items-center">
+        {role === "STUDENT" ? (
+          <>
+            <p className="text-xs">Student Templates:</p>
+            <a
+              href="/data/students-template.csv"
+              download
+              className="text-xs text-indigo-600 hover:underline"
+            >
+              CSV
+            </a>
+            <a
+              href="/data/students-template.xlsx"
+              download
+              className="text-xs text-indigo-600 hover:underline"
+            >
+              Excel
+            </a>
+          </>
+        ) : (
+          <>
+            <p className="text-xs">Teacher Templates:</p>
+            <a
+              href="/data/teachers-template.csv"
+              download
+              className="text-xs text-indigo-600 hover:underline"
+            >
+              CSV
+            </a>
+            <a
+              href="/data/teachers-template.xlsx"
+              download
+              className="text-xs text-indigo-600 hover:underline"
+            >
+              Excel
+            </a>
+          </>
         )}
       </div>
     </form>
