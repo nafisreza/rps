@@ -12,6 +12,7 @@ export default async function StudentDashboard() {
   if (!session || role !== "STUDENT") {
     redirect("/");
   }
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <StudentNavbar user={user} />
@@ -20,7 +21,7 @@ export default async function StudentDashboard() {
         <main className="flex-1 p-8 overflow-y-auto">
           <h1 className="text-3xl font-bold mb-6">Student Dashboard</h1>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-            <div className="bg-yellow-100 rounded-xl p-6 shadow flex flex-col items-center">
+            <div className="bg-yellow-100 rounded-xl p-6 shadow flex flex-col items-center w-full">
               <span className="text-2xl font-bold text-yellow-700">My Results</span>
               <p className="text-gray-500 mt-2 text-center">
                 View/download semester results, see grades and GPA/CGPA.
