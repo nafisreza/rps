@@ -31,7 +31,7 @@ export default async function AdminDashboard() {
   // Determine semester
   const now = new Date();
   const month = now.getMonth() + 1;
-  const semester = month >= 1 && month <= 7 ? "Summer" : "Winter";
+  const semester = month >= 1 && month <= 9 ? "Summer" : "Winter";
 
   // Stat cards config
   const statCards = [
@@ -108,7 +108,7 @@ export default async function AdminDashboard() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="bg-white border border-indigo-100 rounded-xl p-6 shadow">
-              <h2 className="text-xl font-semibold text-[#4d9af3] mb-2">
+              <h2 className="text-xl font-semibold text-[#67AEFF] mb-2">
                 Quick Actions
               </h2>
               <ul className="list-disc ml-5 text-gray-600 space-y-1">
@@ -119,7 +119,7 @@ export default async function AdminDashboard() {
               </ul>
             </div>
             <div className="bg-white border border-indigo-100 rounded-xl p-6 shadow">
-              <h2 className="text-xl font-semibold text-[#4d9af3] mb-2">
+              <h2 className="text-xl font-semibold text-[#67AEFF] mb-2">
                 System Analytics
               </h2>
               <ul className="list-disc ml-5 text-gray-600 space-y-1">

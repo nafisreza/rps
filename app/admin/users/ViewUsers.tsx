@@ -193,7 +193,7 @@ export default function ViewUsers() {
       {/* Search Filters */}
       <div className="flex justify-between mb-4">
         <div className="flex items-center gap-4 mb-4">
-          <Search className="w-4"/>
+          <Search className="w-4" />
           <Input
             placeholder="Name"
             value={searchName}
@@ -289,90 +289,97 @@ export default function ViewUsers() {
       {loading ? (
         <div>Loading...</div>
       ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Department</TableHead>
-              {role === "student" && <TableHead>Program</TableHead>}
-              {role === "student" && <TableHead>Batch</TableHead>}
-              {role === "student" && <TableHead>Student ID</TableHead>}
-              {role === "teacher" && <TableHead>Designation</TableHead>}
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {users.map((u: any) => (
-              <TableRow key={u.id || u.userId}>
-                <TableCell>{u.name}</TableCell>
-                <TableCell>{u.email}</TableCell>
-                <TableCell>{u.department?.name}</TableCell>
-                {role === "student" && (
-                  <TableCell>{u.program?.name || "-"}</TableCell>
-                )}
-                {role === "student" && <TableCell>{u.batch}</TableCell>}
-                {role === "student" && <TableCell>{u.studentId}</TableCell>}
-                {role === "teacher" && <TableCell>{u.designation}</TableCell>}
-                <TableCell>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setEditUser(u);
-                      setEditData({ ...u });
-                    }}
-                    className="mr-2"
-                  >
-                    Edit
-                  </Button>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        disabled={loading}
-                        onClick={() => setDeleteUserId(u.userId || u.id)}
-                      >
-                        Delete
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          Are you sure you want to delete this user?
-                        </AlertDialogTitle>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel asChild>
-                          <Button
-                            variant="outline"
-                            type="button"
-                            disabled={loading}
-                          >
-                            Cancel
-                          </Button>
-                        </AlertDialogCancel>
-                        <AlertDialogAction asChild>
-                          <Button
-                            variant="destructive"
-                            type="button"
-                            disabled={loading}
-                            onClick={() => handleDelete(u.userId || u.id)}
-                          >
-                            {loading && deleteUserId === (u.userId || u.id)
-                              ? "Deleting..."
-                              : "Delete"}
-                          </Button>
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </TableCell>
+        <div className="overflow-x-auto rounded-lg shadow border bg-white">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                {role === "teacher" && <TableHead>Designation</TableHead>}
+                {role === "student" && <TableHead>Student ID</TableHead>}
+                <TableHead>Email</TableHead>
+                <TableHead>Department</TableHead>
+                {role === "student" && <TableHead>Program</TableHead>}
+                {role === "student" && <TableHead>Batch</TableHead>}
+                {role === "student" && <TableHead>Semester</TableHead>}
+
+                <TableHead>Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody className="p-4">
+              {users.map((u: any) => (
+                <TableRow key={u.id || u.userId}>
+                  <TableCell>{u.name}</TableCell>
+                  {role === "teacher" && <TableCell>{u.designation}</TableCell>}
+                  {role === "student" && <TableCell>{u.studentId}</TableCell>}
+                  <TableCell>{u.email}</TableCell>
+                  <TableCell>{u.department?.name}</TableCell>
+                  {role === "student" && (
+                    <TableCell>{u.program?.name || "-"}</TableCell>
+                  )}
+                  {role === "student" && <TableCell>{u.batch}</TableCell>}
+                  {role === "student" && (
+                    <TableCell>{u.currentSemester}</TableCell>
+                  )}
+                  <TableCell>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setEditUser(u);
+                        setEditData({ ...u });
+                      }}
+                      className="mr-2"
+                    >
+                      Edit
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          disabled={loading}
+                          onClick={() => setDeleteUserId(u.userId || u.id)}
+                        >
+                          Delete
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Are you sure you want to delete this user?
+                          </AlertDialogTitle>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel asChild>
+                            <Button
+                              variant="outline"
+                              type="button"
+                              disabled={loading}
+                            >
+                              Cancel
+                            </Button>
+                          </AlertDialogCancel>
+                          <AlertDialogAction asChild>
+                            <Button
+                              variant="destructive"
+                              type="button"
+                              disabled={loading}
+                              onClick={() => handleDelete(u.userId || u.id)}
+                            >
+                              {loading && deleteUserId === (u.userId || u.id)
+                                ? "Deleting..."
+                                : "Delete"}
+                            </Button>
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       )}
       <Dialog
         open={!!editUser}

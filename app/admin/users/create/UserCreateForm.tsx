@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { FaEye, FaEyeSlash, FaRandom } from "react-icons/fa";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +19,18 @@ export default function UserCreateForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Password generator
+  function generatePassword(length = 12) {
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?";
+    let password = "";
+    for (let i = 0, n = charset.length; i < length; ++i) {
+      password += charset.charAt(Math.floor(Math.random() * n));
+    }
+    return password;
+  }
+
   const [departmentId, setDepartmentId] = useState("");
   const [batch, setBatch] = useState("");
   const [studentId, setStudentId] = useState("");
@@ -127,24 +140,44 @@ export default function UserCreateForm() {
           <Input
             id="email"
             type="email"
-            placeholder="user@email.com"
+            placeholder="email@iut-dhaka.edu"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
         </div>
         <div className="flex flex-col">
-          <label htmlFor="password" className="mb-1 text-sm font-medium">
-            Password
+          <label htmlFor="password" className="mb-1 text-sm font-medium flex items-center justify-between">
+            <span>Password</span>
+            <button
+              type="button"
+              className="text-xs text-blue-600 flex items-center gap-1 hover:underline"
+              onClick={() => setPassword(generatePassword())}
+              title="Generate strong password"
+            >
+              <FaRandom className="inline-block" /> Generate
+            </button>
           </label>
-          <Input
-            id="password"
-            type="password"
-            placeholder="strongPassword123"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <div className="relative">
+            <Input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="strongPassword123"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="pr-10"
+            />
+            <button
+              type="button"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              onClick={() => setShowPassword((v) => !v)}
+              tabIndex={-1}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
         </div>
         <div className="flex flex-col">
           <label htmlFor="department" className="mb-1 text-sm font-medium">

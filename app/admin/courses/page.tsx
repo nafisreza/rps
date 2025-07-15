@@ -141,13 +141,13 @@ export default function AdminCoursesPage() {
   };
 
   return (
-    <main className="flex-1 p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">Courses</h2>
+    <main className="flex-1 p-8">
+      <div className="flex justify-between items-center mb-12">
+        <h2 className="text-2xl font-bold">Available Courses</h2>
         <Button onClick={() => router.push("/admin/courses/create")}>Add Course</Button>
       </div>
       {/* Search and Filters */}
-      <div className="flex justify-between mb-4">
+      <div className="flex justify-between mb-8">
         <div className="flex items-center gap-4 mb-4">
           <Search className="w-4" />
           <Input
@@ -244,14 +244,14 @@ export default function AdminCoursesPage() {
             ) : (
               courses.map((course) => (
                 <tr key={course.id} className="border-b hover:bg-gray-50">
-                  <td className="px-4 py-2 font-medium text-gray-900">{course.name}</td>
-                  <td className="px-4 py-2">{course.code}</td>
-                  <td className="px-4 py-2">{course.credit}</td>
-                  <td className="px-4 py-2">{course.semester}</td>
-                  <td className="px-4 py-2">{course.department?.name}</td>
-                  <td className="px-4 py-2">{course.program?.name || '-'} </td>
-                  <td className="px-4 py-2">{course.teacher?.name || "-"}</td>
-                  <td className="px-4 py-2 flex gap-2">
+                  <td className="px-4 py-4 font-medium text-gray-900">{course.name}</td>
+                  <td className="px-4 py-4">{course.code}</td>
+                  <td className="px-4 py-4">{course.credit}</td>
+                  <td className="px-4 py-4">{course.semester}</td>
+                  <td className="px-4 py-4">{course.department?.name}</td>
+                  <td className="px-4 py-4">{course.program?.name || '-'} </td>
+                  <td className="px-4 py-4">{course.teacher?.name || "-"}</td>
+                  <td className="px-4 py-4 flex gap-2">
                     <Button size="sm" variant="outline" onClick={() => openEditModal(course)}>Edit</Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>

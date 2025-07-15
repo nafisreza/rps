@@ -14,7 +14,7 @@ export default async function AdminUsersPage() {
     redirect("/");
   }
   return (
-    <main className="p-4">
+    <main className="p-8">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold mb-6">User Management</h1>
         <Link href="/admin/users/create">
