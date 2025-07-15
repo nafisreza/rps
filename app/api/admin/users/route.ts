@@ -9,6 +9,8 @@ export async function GET(req: NextRequest) {
   const programId = searchParams.get("programId");
   const batch = searchParams.get("batch");
   const designation = searchParams.get("designation");
+  const name = searchParams.get("name");
+  const studentId = searchParams.get("studentId");
 
   if (role === "student") {
     const students = await prisma.student.findMany({
@@ -16,6 +18,8 @@ export async function GET(req: NextRequest) {
         departmentId: departmentId || undefined,
         programId: programId || undefined,
         batch: batch ? batch : undefined,
+        name: name ? { contains: name, mode: "insensitive" } : undefined,
+        studentId: studentId ? { contains: studentId, mode: "insensitive" } : undefined,
       },
       include: { user: true, department: true, program: true },
     });
@@ -25,6 +29,7 @@ export async function GET(req: NextRequest) {
       where: {
         departmentId: departmentId || undefined,
         designation: designation ? designation : undefined,
+        name: name ? { contains: name, mode: "insensitive" } : undefined,
       },
       include: { user: true, department: true },
     });
