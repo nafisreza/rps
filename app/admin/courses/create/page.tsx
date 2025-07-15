@@ -45,7 +45,7 @@ export default function CreateCoursePage() {
 
   useEffect(() => {
     if (form.departmentId) {
-      fetch(`/api/departments?includePrograms=true&id=${form.departmentId}`)
+      fetch(`/api/departments?id=${form.departmentId}`)
         .then((res) => res.json())
         .then((data) => setPrograms(data.programs || []));
     } else {

@@ -53,7 +53,7 @@ export default function ViewUsers() {
 
   useEffect(() => {
     if (department) {
-      fetch(`/api/departments?includePrograms=true&id=${department}`)
+      fetch(`/api/departments?id=${department}`)
         .then((res) => res.json())
         .then((data) => setPrograms(data.programs || []));
       setProgram("");
@@ -123,7 +123,7 @@ export default function ViewUsers() {
   useEffect(() => {
     if (editUser && role === "student" && (editData.departmentId || editData.department?.id)) {
       const deptId = editData.departmentId || editData.department?.id;
-      fetch(`/api/departments?includePrograms=true&id=${deptId}`)
+      fetch(`/api/departments?id=${deptId}`)
         .then((res) => res.json())
         .then((data) => setPrograms(data.programs || []));
     } else {

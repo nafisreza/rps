@@ -5,9 +5,8 @@ const prisma = new PrismaClient();
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const includePrograms = searchParams.get("includePrograms");
   const departmentId = searchParams.get("id");
-  if (includePrograms && departmentId) {
+  if (departmentId) {
     const programs = await prisma.program.findMany({ where: { departmentId }, select: { id: true, name: true } });
     return NextResponse.json({ programs });
   }

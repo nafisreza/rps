@@ -36,7 +36,7 @@ export default function UserCreateForm() {
 
   useEffect(() => {
     if (role === "STUDENT" && departmentId) {
-      fetch(`/api/departments?includePrograms=true&id=${departmentId}`)
+      fetch(`/api/departments?id=${departmentId}`)
         .then((res) => res.json())
         .then((data) => setPrograms(data.programs || []));
     } else {

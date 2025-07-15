@@ -40,7 +40,7 @@ export default function AdminCoursesPage() {
   const [programs, setPrograms] = useState<{ id: string; name: string }[]>([]);
   useEffect(() => {
     if (editForm && editForm.departmentId) {
-      fetch(`/api/departments?includePrograms=true&id=${editForm.departmentId}`)
+      fetch(`/api/departments?id=${editForm.departmentId}`)
         .then((res) => res.json())
         .then((data) => setPrograms(data.programs || []));
     } else {
