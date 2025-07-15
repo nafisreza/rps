@@ -4,25 +4,35 @@ import { NotebookPen } from "lucide-react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function Home() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     setLoading(true);
     e.preventDefault();
-    setError("");
+    // Email regex validation for IUT emails
+    const iutEmailRegex = /^[a-zA-Z0-9._%+-]+@iut-dhaka\.edu$/;
+    if (!iutEmailRegex.test(email)) {
+      toast.error("Please enter your IUT email.");
+      setEmail("");
+      setPassword("");
+      setLoading(false);
+      return;
+    }
     const res = await signIn("credentials", {
       redirect: false,
       email,
       password,
     });
     if (res?.error) {
-      setError("Invalid email or password");
+      toast.error("Incorrect email or password");
+      setEmail("");
+      setPassword("");
       setLoading(false);
     } else {
       // Fetch session to get user role
@@ -44,8 +54,12 @@ export default function Home() {
           <div className="bg-gray-200 rounded-full p-3 mb-3">
             <NotebookPen className="w-8 h-8 text-gray-600" />
           </div>
-          <h2 className="text-3xl font-bold text-center mb-1 text-gray-800 tracking-tight">IUT Result Processing System</h2>
-          <p className="text-sm text-gray-500 text-center">Please sign in to continue.</p>
+          <h2 className="text-3xl font-bold text-center mb-1 text-gray-800 tracking-tight">
+            IUT Result Processing System
+          </h2>
+          <p className="text-sm text-gray-500 text-center">
+            Please sign in to continue.
+          </p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-3 w-full">
           <div className="flex flex-col gap-2">
@@ -61,7 +75,9 @@ export default function Home() {
             />
           </div>
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-700">Password</label>
+            <label className="text-sm font-medium text-gray-700">
+              Password
+            </label>
             <input
               type="password"
               value={password}
@@ -72,18 +88,16 @@ export default function Home() {
               autoComplete="current-password"
             />
           </div>
-          {error && (
-            <div className="text-red-600 text-sm text-end">{error}</div>
-          )}
-       <div className="flex justify-end">
-           <button
-            type="submit"
-            className=" bg-gray-900 hover:bg-gray-700 text-white font-semibold py-2 px-6 rounded-[10px] shadow transition-all duration-200 tracking-wide mt-2 cursor-pointer"
-            disabled={loading}
-          >
-            Login
-          </button>
-       </div>
+          {/* Error messages are now shown as toast notifications */}
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              className=" bg-gray-900 hover:bg-gray-700 text-white font-semibold py-2 px-6 rounded-[10px] shadow transition-all duration-200 tracking-wide mt-2 cursor-pointer"
+              disabled={loading}
+            >
+              Login
+            </button>
+          </div>
         </form>
         <div className="mt-8 text-center text-xs text-gray-400">
           &copy; {new Date().getFullYear()} Team Dijkstra
