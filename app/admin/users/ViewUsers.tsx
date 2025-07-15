@@ -35,6 +35,7 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import { Funnel, Search } from "lucide-react";
 
 export default function ViewUsers() {
   const [role, setRole] = useState("student");
@@ -44,7 +45,11 @@ export default function ViewUsers() {
   const [designation, setDesignation] = useState("");
   const [users, setUsers] = useState([]);
   const [programs, setPrograms] = useState<{ id: string; name: string }[]>([]);
-  const [departments, setDepartments] = useState<{ id: string; name: string }[]>([]);
+  const [departments, setDepartments] = useState<
+    { id: string; name: string }[]
+  >([]);
+  const [searchName, setSearchName] = useState("");
+  const [searchStudentId, setSearchStudentId] = useState("");
   useEffect(() => {
     fetch("/api/departments")
       .then((res) => res.json())
@@ -74,13 +79,24 @@ export default function ViewUsers() {
     if (program && role === "student") url += `&programId=${program}`;
     if (batch && role === "student") url += `&batch=${batch}`;
     if (designation && role === "teacher") url += `&designation=${designation}`;
+    if (searchName) url += `&name=${encodeURIComponent(searchName)}`;
+    if (role === "student" && searchStudentId)
+      url += `&studentId=${encodeURIComponent(searchStudentId)}`;
     fetch(url)
       .then((res) => res.json())
       .then((data) => {
         setUsers(role === "student" ? data.students : data.teachers);
         setLoading(false);
       });
-  }, [role, department, program, batch, designation]);
+  }, [
+    role,
+    department,
+    program,
+    batch,
+    designation,
+    searchName,
+    searchStudentId,
+  ]);
 
   async function handleDelete(userId: string) {
     setLoading(true);
@@ -121,7 +137,11 @@ export default function ViewUsers() {
   };
 
   useEffect(() => {
-    if (editUser && role === "student" && (editData.departmentId || editData.department?.id)) {
+    if (
+      editUser &&
+      role === "student" &&
+      (editData.departmentId || editData.department?.id)
+    ) {
       const deptId = editData.departmentId || editData.department?.id;
       fetch(`/api/departments?id=${deptId}`)
         .then((res) => res.json())
@@ -170,72 +190,101 @@ export default function ViewUsers() {
 
   return (
     <div>
-      <div className="flex gap-4 mb-4">
-        <Select value={role} onValueChange={setRole}>
-          <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder="Role" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="student">Students</SelectItem>
-            <SelectItem value="teacher">Teachers</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select
-          value={department || 'all'}
-          onValueChange={v => setDepartment(v === 'all' ? '' : v)}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select department" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Department</SelectItem>
-            {departments.map((dep) => (
-              <SelectItem key={dep.id} value={dep.id}>{dep.name}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {role === "student" && (
-          <Select
-            value={program || 'all'}
-            onValueChange={v => setProgram(v === 'all' ? '' : v)}
-            disabled={!department}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select program" />
+      {/* Search Filters */}
+      <div className="flex justify-between mb-4">
+        <div className="flex items-center gap-4 mb-4">
+          <Search className="w-4"/>
+          <Input
+            placeholder="Name"
+            value={searchName}
+            onChange={(e) => setSearchName(e.target.value)}
+            className="w-[180px]"
+          />
+          {role === "student" && (
+            <Input
+              placeholder="Student ID"
+              value={searchStudentId}
+              onChange={(e) => setSearchStudentId(e.target.value)}
+              className="w-[180px]"
+            />
+          )}
+        </div>
+        <div className="flex items-center gap-4 mb-4">
+          <Funnel className="w-4" />
+          <Select value={role} onValueChange={setRole}>
+            <SelectTrigger className="w-[160px]">
+              <SelectValue placeholder="Role" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Program</SelectItem>
-              {programs.map((p) => (
-                <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+              <SelectItem value="student">Students</SelectItem>
+              <SelectItem value="teacher">Teachers</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select
+            value={department || "all"}
+            onValueChange={(v) => setDepartment(v === "all" ? "" : v)}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select department" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Department</SelectItem>
+              {departments.map((dep) => (
+                <SelectItem key={dep.id} value={dep.id}>
+                  {dep.name}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
-        )}
-        {role === "student" && (
-          <Input
-            placeholder="Batch"
-            value={batch}
-            onChange={(e) => setBatch(e.target.value)}
-            className="w-[120px]"
-          />
-        )}
-        {role === "teacher" && (
-          <Select
-            value={designation || 'all'}
-            onValueChange={v => setDesignation(v === 'all' ? '' : v)}
-          >
-            <SelectTrigger className="w-[160px]">
-              <SelectValue placeholder="Select designation" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Designation</SelectItem>
-              <SelectItem value="Professor">Professor</SelectItem>
-              <SelectItem value="Associate Professor">Associate Professor</SelectItem>
-              <SelectItem value="Assistant Professor">Assistant Professor</SelectItem>
-              <SelectItem value="Lecturer">Lecturer</SelectItem>
-            </SelectContent>
-          </Select>
-        )}
+          {role === "student" && (
+            <Select
+              value={program || "all"}
+              onValueChange={(v) => setProgram(v === "all" ? "" : v)}
+              disabled={!department}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select program" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Program</SelectItem>
+                {programs.map((p) => (
+                  <SelectItem key={p.id} value={p.id}>
+                    {p.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          {role === "student" && (
+            <Input
+              placeholder="Batch"
+              value={batch}
+              onChange={(e) => setBatch(e.target.value)}
+              className="w-[120px]"
+            />
+          )}
+          {role === "teacher" && (
+            <Select
+              value={designation || "all"}
+              onValueChange={(v) => setDesignation(v === "all" ? "" : v)}
+            >
+              <SelectTrigger className="w-[160px]">
+                <SelectValue placeholder="Select designation" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Designation</SelectItem>
+                <SelectItem value="Professor">Professor</SelectItem>
+                <SelectItem value="Associate Professor">
+                  Associate Professor
+                </SelectItem>
+                <SelectItem value="Assistant Professor">
+                  Assistant Professor
+                </SelectItem>
+                <SelectItem value="Lecturer">Lecturer</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+        </div>
       </div>
       {loading ? (
         <div>Loading...</div>
@@ -259,7 +308,9 @@ export default function ViewUsers() {
                 <TableCell>{u.name}</TableCell>
                 <TableCell>{u.email}</TableCell>
                 <TableCell>{u.department?.name}</TableCell>
-                {role === "student" && <TableCell>{u.program?.name || '-'}</TableCell>}
+                {role === "student" && (
+                  <TableCell>{u.program?.name || "-"}</TableCell>
+                )}
                 {role === "student" && <TableCell>{u.batch}</TableCell>}
                 {role === "student" && <TableCell>{u.studentId}</TableCell>}
                 {role === "teacher" && <TableCell>{u.designation}</TableCell>}
@@ -323,7 +374,12 @@ export default function ViewUsers() {
           </TableBody>
         </Table>
       )}
-      <Dialog open={!!editUser} onOpenChange={(v) => { if (!v) closeModal(); }}>
+      <Dialog
+        open={!!editUser}
+        onOpenChange={(v) => {
+          if (!v) closeModal();
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
@@ -356,7 +412,9 @@ export default function ViewUsers() {
             />
             <Select
               value={editData.departmentId || editData.department?.id || ""}
-              onValueChange={(value) => setEditData({ ...editData, departmentId: value })}
+              onValueChange={(value) =>
+                setEditData({ ...editData, departmentId: value })
+              }
               required
             >
               <SelectTrigger className="w-full">
@@ -364,7 +422,9 @@ export default function ViewUsers() {
               </SelectTrigger>
               <SelectContent>
                 {departments.map((dep) => (
-                  <SelectItem key={dep.id} value={dep.id}>{dep.name}</SelectItem>
+                  <SelectItem key={dep.id} value={dep.id}>
+                    {dep.name}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -372,14 +432,24 @@ export default function ViewUsers() {
               <>
                 <Select
                   value={editData.programId || ""}
-                  onValueChange={(v) => setEditData({ ...editData, programId: v })}
+                  onValueChange={(v) =>
+                    setEditData({ ...editData, programId: v })
+                  }
                 >
                   <SelectTrigger id="program" className="w-full">
-                    <SelectValue placeholder={programs.length ? "Select program" : "Select department first"} />
+                    <SelectValue
+                      placeholder={
+                        programs.length
+                          ? "Select program"
+                          : "Select department first"
+                      }
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {programs.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                      <SelectItem key={p.id} value={p.id}>
+                        {p.name}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -405,7 +475,10 @@ export default function ViewUsers() {
                   max={8}
                   value={editData.currentSemester || 1}
                   onChange={(e) =>
-                    setEditData({ ...editData, currentSemester: Number(e.target.value) })
+                    setEditData({
+                      ...editData,
+                      currentSemester: Number(e.target.value),
+                    })
                   }
                   placeholder="Semester"
                   required
@@ -413,14 +486,27 @@ export default function ViewUsers() {
               </>
             )}
             {role === "teacher" && (
-              <Input
+              <Select
                 value={editData.designation || ""}
-                onChange={(e) =>
-                  setEditData({ ...editData, designation: e.target.value })
+                onValueChange={(v) =>
+                  setEditData({ ...editData, designation: v })
                 }
-                placeholder="Designation"
                 required
-              />
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select designation" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Professor">Professor</SelectItem>
+                  <SelectItem value="Associate Professor">
+                    Associate Professor
+                  </SelectItem>
+                  <SelectItem value="Assistant Professor">
+                    Assistant Professor
+                  </SelectItem>
+                  <SelectItem value="Lecturer">Lecturer</SelectItem>
+                </SelectContent>
+              </Select>
             )}
             <DialogFooter>
               <Button type="submit" disabled={loading}>
