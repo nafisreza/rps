@@ -91,8 +91,32 @@ export default function UserCreateForm() {
   }
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-      <div className="flex flex-col gap-4">
+    <div>
+      {/* Search Fields */}
+      <div className="flex gap-4 mb-4">
+        <div className="flex flex-col">
+          <label htmlFor="searchName" className="mb-1 text-sm font-medium">Search by Name</label>
+          <Input
+            id="searchName"
+            type="text"
+            placeholder="Enter name to search"
+            // Implement search logic as needed
+          />
+        </div>
+        {role === "STUDENT" && (
+          <div className="flex flex-col">
+            <label htmlFor="searchStudentId" className="mb-1 text-sm font-medium">Search by Student ID</label>
+            <Input
+              id="searchStudentId"
+              type="text"
+              placeholder="Enter student ID to search"
+              // Implement search logic as needed
+            />
+          </div>
+        )}
+      </div>
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+        <div className="flex flex-col gap-4">
         <div className="flex flex-col">
           <label htmlFor="role" className="mb-1 text-sm font-medium">
             Role
@@ -245,14 +269,14 @@ export default function UserCreateForm() {
                 <SelectValue placeholder="Select designation" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="PROFESSOR">Professor</SelectItem>
-                <SelectItem value="ASSISTANT_PROFESSOR">
+                <SelectItem value="Professor">Professor</SelectItem>
+                <SelectItem value="Assistant Professor">
                   Assistant Professor
                 </SelectItem>
-                <SelectItem value="ASSOCIATE_PROFESSOR">
+                <SelectItem value="Associate Professor">
                   Associate Professor
                 </SelectItem>
-                <SelectItem value="LECTURER">Lecturer</SelectItem>
+                <SelectItem value="Lecturer">Lecturer</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -263,6 +287,7 @@ export default function UserCreateForm() {
           {loading ? "Creating..." : "Create User"}
         </Button>
       </div>
-    </form>
+      </form>
+    </div>
   );
 }
