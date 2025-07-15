@@ -11,7 +11,7 @@ const AdminNavbar: FC<{ user: SessionUser | undefined }> = ({ user }) => {
   return (
     <nav className="h-20 w-full flex items-center justify-between px-8 bg-white shadow border-b border-gray-200 z-10">
       <div className="flex items-center gap-4">
-        <span className="font-bold text-xl text-indigo-700">IUT RPS</span>
+        <span className="font-bold text-xl text-[#3D74B6]">IUT RPS</span>
         <span className="ml-6 text-gray-400 text-sm">Admin &gt; Dashboard</span>
       </div>
       <div className="flex items-center gap-4 relative">
@@ -20,14 +20,14 @@ const AdminNavbar: FC<{ user: SessionUser | undefined }> = ({ user }) => {
           className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center focus:outline-none"
           onClick={() => setOpen((v) => !v)}
         >
-          <span className="text-indigo-700 font-bold text-lg">
+          <span className="text-[#3D74B6] font-bold text-lg">
             {user?.email?.[0]?.toUpperCase() || "A"}
           </span>
         </button>
         {open && (
           <div className="absolute right-0 top-12 bg-white border border-gray-200 rounded-lg shadow-lg py-2 w-40 z-50">
             <button
-              className="w-full text-left px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 transition-colors"
+              className="w-full text-left px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-[#3D74B6] transition-colors"
               onClick={() => signOut()}
             >
               Logout

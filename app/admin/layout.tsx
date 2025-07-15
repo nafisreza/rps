@@ -23,7 +23,7 @@ export default async function AdminLayout({
       <AdminNavbar user={user} />
       <div className="flex">
         <AdminSidebar />
-        <main className="flex-1 p-4">{children}</main>
+        <main className="flex-1 bg-gray-50">{children}</main>
       </div>
     </div>
   );
