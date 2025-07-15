@@ -55,6 +55,8 @@ export default async function StudentResultsPage() {
                       <th className="px-4 py-2 text-left font-semibold text-yellow-700">Credit</th>
                       <th className="px-4 py-2 text-left font-semibold text-yellow-700">Department</th>
                       <th className="px-4 py-2 text-left font-semibold text-yellow-700">Program</th>
+                      <th className="px-4 py-2 text-left font-semibold text-yellow-700">Faculty</th>
+                      <th className="px-4 py-2 text-left font-semibold text-yellow-700">Grade</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -65,6 +67,8 @@ export default async function StudentResultsPage() {
                         <td className="px-4 py-2">{course.credit}</td>
                         <td className="px-4 py-2">{course.department?.name}</td>
                         <td className="px-4 py-2">{course.program?.name || '-'}</td>
+                        <td className="px-4 py-2">{course.teacher?.name || '-'}</td>
+                        <td className="px-4 py-2">Pending</td>
                       </tr>
                     ))}
                   </tbody>
