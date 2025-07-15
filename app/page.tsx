@@ -9,9 +9,11 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
+    setLoading(true);
     e.preventDefault();
     setError("");
     const res = await signIn("credentials", {
@@ -21,6 +23,7 @@ export default function Home() {
     });
     if (res?.error) {
       setError("Invalid email or password");
+      setLoading(false);
     } else {
       // Fetch session to get user role
       const sessionRes = await fetch("/api/auth/session");
@@ -30,59 +33,60 @@ export default function Home() {
       else if (role === "TEACHER") router.push("/teacher");
       else if (role === "STUDENT") router.push("/student");
       else router.push("/");
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100">
-      <div className="relative w-full max-w-lg p-0">
-        <div className="absolute inset-0 rounded-3xl bg-white/60 backdrop-blur-lg shadow-xl border border-white/30" style={{ zIndex: 1 }}></div>
-        <div className="relative z-10 p-10 flex flex-col items-center">
-          <div className="mb-6 flex flex-col items-center">
-            <div className="bg-gradient-to-br from-blue-200 to-pink-200 rounded-full p-4 shadow-lg mb-2">
-              <NotebookPen />
-            </div>
-            <h2 className="text-4xl font-bold text-center mb-2 text-gray-800 tracking-tight">Result Processing System</h2>
-            <p className="text-sm text-gray-500 text-center">Sign in to access your dashboard</p>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-gray-200 p-10 flex flex-col items-center">
+        <div className="mb-8 flex flex-col items-center">
+          <div className="bg-gray-200 rounded-full p-3 mb-3">
+            <NotebookPen className="w-8 h-8 text-gray-600" />
           </div>
-          <form onSubmit={handleSubmit} className="space-y-6 w-full">
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-gray-700">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full px-4 py-3 border-none rounded-xl bg-white/80 shadow focus:outline-none focus:ring-2 focus:ring-blue-200 text-gray-800 placeholder-gray-400"
-                placeholder="Enter your email"
-                autoComplete="email"
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-gray-700">Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full px-4 py-3 border-none rounded-xl bg-white/80 shadow focus:outline-none focus:ring-2 focus:ring-blue-200 text-gray-800 placeholder-gray-400"
-                placeholder="Enter your password"
-                autoComplete="current-password"
-              />
-            </div>
-            {error && (
-              <div className="text-red-600 text-sm text-center rounded-lg bg-red-50 py-2 px-4 shadow">{error}</div>
-            )}
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-blue-400 via-purple-200 to-pink-200 hover:from-blue-500 hover:to-pink-300 text-gray-900 font-bold py-3 rounded-xl shadow-lg transition-all duration-200 text-lg tracking-wide"
-            >
-              Login
-            </button>
-          </form>
-          <div className="mt-8 text-center text-xs text-gray-400">
-            &copy; {new Date().getFullYear()} Result Processing System
+          <h2 className="text-3xl font-bold text-center mb-1 text-gray-800 tracking-tight">IUT Result Processing System</h2>
+          <p className="text-sm text-gray-500 text-center">Please sign in to continue.</p>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-3 w-full">
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-gray-700">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-200 text-gray-800 placeholder-gray-400 bg-gray-50"
+              placeholder="Enter your email"
+              autoComplete="email"
+            />
           </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-gray-700">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-200 text-gray-800 placeholder-gray-400 bg-gray-50"
+              placeholder="Enter your password"
+              autoComplete="current-password"
+            />
+          </div>
+          {error && (
+            <div className="text-red-600 text-sm text-end">{error}</div>
+          )}
+       <div className="flex justify-end">
+           <button
+            type="submit"
+            className=" bg-gray-900 hover:bg-gray-700 text-white font-semibold py-2 px-6 rounded-[10px] shadow transition-all duration-200 tracking-wide mt-2 cursor-pointer"
+            disabled={loading}
+          >
+            Login
+          </button>
+       </div>
+        </form>
+        <div className="mt-8 text-center text-xs text-gray-400">
+          &copy; {new Date().getFullYear()} Team Dijkstra
         </div>
       </div>
     </div>
