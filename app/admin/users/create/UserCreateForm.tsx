@@ -91,32 +91,8 @@ export default function UserCreateForm() {
   }
 
   return (
-    <div>
-      {/* Search Fields */}
-      <div className="flex gap-4 mb-4">
-        <div className="flex flex-col">
-          <label htmlFor="searchName" className="mb-1 text-sm font-medium">Search by Name</label>
-          <Input
-            id="searchName"
-            type="text"
-            placeholder="Enter name to search"
-            // Implement search logic as needed
-          />
-        </div>
-        {role === "STUDENT" && (
-          <div className="flex flex-col">
-            <label htmlFor="searchStudentId" className="mb-1 text-sm font-medium">Search by Student ID</label>
-            <Input
-              id="searchStudentId"
-              type="text"
-              placeholder="Enter student ID to search"
-              // Implement search logic as needed
-            />
-          </div>
-        )}
-      </div>
-      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-        <div className="flex flex-col gap-4">
+    <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+      <div className="flex flex-col gap-4">
         <div className="flex flex-col">
           <label htmlFor="role" className="mb-1 text-sm font-medium">
             Role
@@ -287,7 +263,6 @@ export default function UserCreateForm() {
           {loading ? "Creating..." : "Create User"}
         </Button>
       </div>
-      </form>
-    </div>
+    </form>
   );
 }
