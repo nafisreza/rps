@@ -89,7 +89,14 @@ export default function Home() {
             />
           </div>
           {/* Error messages are now shown as toast notifications */}
-          <div className="flex justify-end">
+          <div className="flex flex-col items-end gap-2">
+            <a
+              href="/forgot-password"
+              className="text-xs text-blue-600 hover:underline mb-1"
+              tabIndex={-1}
+            >
+              Forgot password?
+            </a>
             <button
               type="submit"
               className=" bg-gray-900 hover:bg-gray-700 text-white font-semibold py-2 px-6 rounded-[10px] shadow transition-all duration-200 tracking-wide mt-2 cursor-pointer"
