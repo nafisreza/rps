@@ -23,6 +23,7 @@ model User {
   student   Student?
   teacher   Teacher?
   passwordResetTokens PasswordResetToken[]
+  mustChangePassword Boolean  @default(false)
 }
 
 model PasswordResetToken {
