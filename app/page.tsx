@@ -35,11 +35,14 @@ export default function Home() {
       setPassword("");
       setLoading(false);
     } else {
-      // Fetch session to get user role
+      // Fetch session to get user
       const sessionRes = await fetch("/api/auth/session");
       const session = await sessionRes.json();
       const role = session?.user?.role;
-      if (role === "ADMIN") router.push("/admin");
+      const mustChangePassword = session?.user?.mustChangePassword;
+      if (mustChangePassword) {
+        router.push("/change-password");
+      } else if (role === "ADMIN") router.push("/admin");
       else if (role === "TEACHER") router.push("/teacher");
       else if (role === "STUDENT") router.push("/student");
       else router.push("/");
