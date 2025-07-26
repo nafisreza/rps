@@ -1,8 +1,15 @@
+
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { requireAdminAuth } from "../../../../lib/adminAuth";
 const prisma = new PrismaClient();
 
+
 export async function GET(req: NextRequest) {
+  // Require admin authentication
+  const session = await requireAdminAuth();
+  if (session instanceof NextResponse) return session;
+
   const { searchParams } = new URL(req.url);
   const role = searchParams.get("role");
   const departmentId = searchParams.get("departmentId");
