@@ -57,6 +57,7 @@ model Student {
   email       String   @unique
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  enrollments Enrollment[]
 }
 
 model Teacher {
@@ -103,4 +104,50 @@ model Course {
   programId    String
   teacher      Teacher?  @relation(fields: [teacherId], references: [id])
   teacherId    String?
+  enrollments  Enrollment[]
+  resultStatuses CourseResultStatus[]
+}
+
+model Enrollment {
+  id           String   @id @default(uuid())
+  student      Student  @relation(fields: [studentId], references: [id])
+  studentId    String
+  course       Course   @relation(fields: [courseId], references: [id])
+  courseId     String
+  results      Result[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Result {
+  id           String       @id @default(uuid())
+  enrollment   Enrollment   @relation(fields: [enrollmentId], references: [id])
+  enrollmentId String
+  attendance   Float
+  quiz1        Float
+  quiz2        Float
+  quiz3        Float
+  quiz4        Float
+  midterm      Float
+  final        Float
+  total        Float
+  grade        String
+  gradePoint   Float
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model CourseResultStatus {
+  id         String   @id @default(uuid())
+  course     Course   @relation(fields: [courseId], references: [id])
+  courseId   String
+  semester   Int
+  status     ResultStatus @default(DRAFT)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+enum ResultStatus {
+  DRAFT
+  APPROVED
 }
