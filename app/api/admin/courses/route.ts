@@ -38,6 +38,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const data = await req.json();
   try {
+    // Create the course
     const course = await prisma.course.create({
       data: {
         name: data.name,
@@ -49,7 +50,24 @@ export async function POST(req: NextRequest) {
         programId: data.programId,
       },
     });
-    return NextResponse.json({ course });
+
+    // Auto-enroll all students matching department, program, and semester
+    const studentsToEnroll = await prisma.student.findMany({
+      where: {
+        departmentId: data.departmentId,
+        programId: data.programId,
+        currentSemester: data.semester,
+      },
+      select: { id: true },
+    });
+    if (studentsToEnroll.length > 0) {
+      await prisma.enrollment.createMany({
+        data: studentsToEnroll.map(s => ({ studentId: s.id, courseId: course.id })),
+        skipDuplicates: true,
+      });
+    }
+
+    return NextResponse.json({ course, enrolledCount: studentsToEnroll.length });
   } catch (e) {
     return NextResponse.json({ error: "Failed to create course", e }, { status: 500 });
   }
