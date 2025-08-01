@@ -50,24 +50,8 @@ export async function POST(req: NextRequest) {
         programId: data.programId,
       },
     });
-
-    // Auto-enroll all students matching department, program, and semester
-    const studentsToEnroll = await prisma.student.findMany({
-      where: {
-        departmentId: data.departmentId,
-        programId: data.programId,
-        currentSemester: data.semester,
-      },
-      select: { id: true },
-    });
-    if (studentsToEnroll.length > 0) {
-      await prisma.enrollment.createMany({
-        data: studentsToEnroll.map(s => ({ studentId: s.id, courseId: course.id })),
-        skipDuplicates: true,
-      });
-    }
-
-    return NextResponse.json({ course, enrolledCount: studentsToEnroll.length });
+    // No auto-enrollment. Admin will enroll students manually.
+    return NextResponse.json({ course });
   } catch (e) {
     return NextResponse.json({ error: "Failed to create course", e }, { status: 500 });
   }
