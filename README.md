@@ -1,4 +1,4 @@
-# Rock Paper Scissors - RPS Web App
+# Result Processing System - RPS Web App
 
 This project is a modern implementation of the classic Rock Paper Scissors (RPS) game using **Next.js**, **TypeScript**, and **Tailwind CSS** for the frontend. It may also include Python-based utilities or backend support.
 
