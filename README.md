@@ -1,17 +1,31 @@
-# Result Processing System - RPS Web App
+# 📊 Result Processing System (RPS)
 
-This project is a modern implementation of the classic Rock Paper Scissors (RPS) game using **Next.js**, **TypeScript**, and **Tailwind CSS** for the frontend. It may also include Python-based utilities or backend support.
+A web-based **Result Processing System** built using **Next.js**, **TypeScript**, and **Tailwind CSS**, designed to efficiently manage and publish academic results. The system includes role-based access for administrators and users, offering a seamless experience for inputting, calculating, and viewing student performance data.
+
+---
 
 ## 🚀 Features
 
-- ✨ Interactive and responsive user interface
-- 🧠 Admin and user layouts for role-based access
-- ⚙️ Built with Next.js and TypeScript for scalability
-- 💅 Tailwind CSS and PostCSS for styling
-- ✅ ESLint integration for clean code
-- 📦 Dependency management with `npm` and `requirements.txt`
+- 🧑‍💼 Admin dashboard for managing students, results, and announcements
+- 🎓 Student panel to view individual academic performance
+- 📄 Dynamic result generation
+- ✅ Clean and responsive UI using Tailwind CSS
+- 🔐 Secure and role-based routing
+- 🧹 ESLint and TypeScript for maintainable code
+- 🔧 Easily extendable and customizable
+
+---
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** Next.js, React, TypeScript
-- **Styling:** Tailwind CSS, PostCSS
+| Category      | Technology        |
+|---------------|-------------------|
+| **Framework** | Next.js (React)   |
+| **Language**  | TypeScript        |
+| **Styling**   | Tailwind CSS, PostCSS |
+| **Linting**   | ESLint            |
+| **Backend (optional)** | Python (requirements.txt present) |
+| **Build Tool**| Vite (if used) or Next build |
+
+
+
