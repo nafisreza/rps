@@ -12,67 +12,62 @@ export default async function StudentResultsPage() {
   if (!session || role !== "STUDENT") {
     redirect("/");
   }
-  // Fetch only enrolled courses for the student
-  let enrolledCourses: any[] = [];
-  if (user?.role === "STUDENT" && user?.id) {
-    // Fetch student record using user.id
-    const studentRes = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/users/${user.id}`
-    );
+  // Fetch approved results for the student
+  let results = [];
+  let studentId = null;
+  if (user?.id) {
+    const studentRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/users/${user.id}`);
     let studentData = null;
     try {
       studentData = await studentRes.json();
     } catch {
       studentData = null;
     }
-    const studentId = studentData?.student?.id;
-    if (studentId) {
-      const coursesRes = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/student/${studentId}/courses`
-      );
-      let coursesData = null;
-      try {
-        coursesData = await coursesRes.json();
-      } catch {
-        coursesData = null;
-      }
-      enrolledCourses = coursesData?.courses || [];
-    }
+    studentId = studentData?.student?.id;
   }
+  if (studentId) {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const res = await fetch(`${baseUrl}/api/student/${studentId}/results`, { cache: "no-store" });
+    const data = await res.json();
+    results = data.results || [];
+  }
+
+  console.log(results, '<=== Student Results ===>');
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <StudentNavbar user={user} />
       <div className="flex flex-1">
         <StudentSidebar />
         <main className="flex-1 p-8 overflow-y-auto">
-          <h1 className="text-3xl font-bold mb-6">My Courses</h1>
+          <h1 className="text-3xl font-bold mb-6">My Results</h1>
           <div className="mt-4 w-full">
-            <h3 className="text-lg font-semibold text-yellow-700 mb-2">Enrolled Courses</h3>
-            {enrolledCourses.length === 0 ? (
-              <p className="text-gray-500">No enrolled courses found.</p>
+            <h3 className="text-lg font-semibold text-yellow-700 mb-4">Results for this semester</h3>
+            {results.length === 0 ? (
+              <p className="text-gray-500">No approved results found.</p>
             ) : (
               <table className="min-w-full text-sm border rounded-lg overflow-hidden">
                 <thead className="bg-yellow-50">
                   <tr>
-                    <th className="px-4 py-2 text-left font-semibold text-yellow-700">Name</th>
+                    <th className="px-4 py-2 text-left font-semibold text-yellow-700">Course</th>
                     <th className="px-4 py-2 text-left font-semibold text-yellow-700">Code</th>
                     <th className="px-4 py-2 text-left font-semibold text-yellow-700">Credit</th>
-                    <th className="px-4 py-2 text-left font-semibold text-yellow-700">Department</th>
-                    <th className="px-4 py-2 text-left font-semibold text-yellow-700">Program</th>
+                    <th className="px-4 py-2 text-left font-semibold text-yellow-700">Semester</th>
                     <th className="px-4 py-2 text-left font-semibold text-yellow-700">Faculty</th>
                     <th className="px-4 py-2 text-left font-semibold text-yellow-700">Grade</th>
+                    <th className="px-4 py-2 text-left font-semibold text-yellow-700">GPA</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {enrolledCourses.map((course: any) => (
-                    <tr key={course.id} className="border-b">
-                      <td className="px-4 py-2 font-medium text-gray-900">{course.name}</td>
-                      <td className="px-4 py-2">{course.code}</td>
-                      <td className="px-4 py-2">{course.credit}</td>
-                      <td className="px-4 py-2">{course.department?.name}</td>
-                      <td className="px-4 py-2">{course.program?.name || '-'}</td>
-                      <td className="px-4 py-2">{course.teacher?.name || '-'}</td>
-                      <td className="px-4 py-2">Pending</td>
+                  {results.map((r: any) => (
+                    <tr key={r.course.id} className="border-b">
+                      <td className="px-4 py-2 font-medium text-gray-900">{r.course.name}</td>
+                      <td className="px-4 py-2">{r.course.code}</td>
+                      <td className="px-4 py-2">{r.course.credit}</td>
+                      <td className="px-4 py-2">{r.course.semester}</td>
+                      <td className="px-4 py-2">{r.course.teacher}</td>
+                      <td className="px-4 py-2 font-semibold text-yellow-900">{r.grade}</td>
+                      <td className="px-4 py-2 font-semibold text-yellow-900">{r.gradePoint}</td>
                     </tr>
                   ))}
                 </tbody>
