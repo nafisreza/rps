@@ -133,12 +133,25 @@ export default function TeacherCourseResultsPage({
     field: string,
     value: number
   ) {
+    // Clamp values: no negative, no over max
+    const min = 0;
+    let max = 100;
+    if (field === "attendance") {
+      max = 100; // attendance is always percentage
+    } else if (field.startsWith("quiz")) {
+      max = credit * 100 * 0.05;
+    } else if (field === "midterm") {
+      max = credit * 100 * 0.25;
+    } else if (field === "final") {
+      max = credit * 100 * 0.5;
+    }
+    const safeValue = Math.max(min, Math.min(value, max));
     setMarks((prev: any) => {
       return {
         ...prev,
         [enrollmentId]: {
           ...prev[enrollmentId],
-          [field]: value,
+          [field]: safeValue,
         },
       };
     });
@@ -197,7 +210,7 @@ export default function TeacherCourseResultsPage({
               <th className="px-4 py-3 text-left font-semibold text-blue-900">
                 Attendance{" "}
                 <span className="text-xs text-gray-500">
-                  ({credit * 100 * 0.1})
+                  (%)
                 </span>
               </th>
               <th className="px-4 py-3 text-left font-semibold text-blue-900">
@@ -269,7 +282,7 @@ export default function TeacherCourseResultsPage({
                       <input
                         type="number"
                         min={0}
-                        max={credit * 100 * 0.1}
+                        max={100}
                         value={m.attendance ?? ""}
                         onChange={(e) =>
                           handleMarkChange(
