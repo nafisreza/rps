@@ -12,13 +12,10 @@ export default async function TeacherCoursesPage() {
     const teacherRes = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/users/${user.id}`
     );
-    console.log("Fetching teacher data for user ID:", user.id);
     let teacherData = null;
     try {
       teacherData = await teacherRes.json();
-      console.log("Teacher data:", teacherData);
-    } catch (err) {
-      console.log("Error parsing teacher data:", err);
+    } catch {
       teacherData = null;
     }
     teacherId = teacherData?.teacher?.id || user.id;
