@@ -149,5 +149,6 @@ model CourseResultStatus {
 
 enum ResultStatus {
   DRAFT
+  SUBMITTED
   APPROVED
 }
