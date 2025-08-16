@@ -3,7 +3,6 @@
 import { Check, Send, FileDown } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { toast as sonnerToast } from "sonner";
-import { generateResultPdf, ResultCourse, ResultStudent } from "../../../../../lib/generateResultPdf";
 
 async function fetchCourseData(courseId: string) {
   const res = await fetch(`/api/teacher/courses/${courseId}/results`, {
@@ -108,50 +107,10 @@ export default function TeacherCourseResultsPage({
   }
 
   async function handleDownloadPdf(type: "draft" | "locked") {
-    // Prepare students data for PDF
-    const students: ResultStudent[] = getSortedEnrollments(enrollments).map((enr: any) => {
-      const m = marks[enr.id] || {};
-      const result = calculateResult(m);
-      // Sum best 3 quizzes for PDF
-      const quizzes = [m.quiz1 || 0, m.quiz2 || 0, m.quiz3 || 0, m.quiz4 || 0].sort((a, b) => b - a).slice(0, 3);
-      const quiz = quizzes.reduce((a, b) => a + b, 0);
-      return {
-        studentId: enr.student.studentId,
-        name: enr.student.name,
-        attendance: m.attendance,
-        quiz,
-        midterm: m.midterm,
-        final: m.final,
-        total: result.total,
-        grade: result.grade,
-      };
-    });
-    // courseInfo for PDF Generation
-    const course: ResultCourse = {
-      name: courseInfo.name,
-      code: courseInfo.code,
-      credit: courseInfo.credit,
-      department: courseInfo.department ? { name: courseInfo.department.name } : undefined,
-      program: courseInfo.program ? { name: courseInfo.program.name } : undefined,
-      faculty: courseInfo.teacher ? { name: courseInfo.teacher.name } : undefined,
-    };
-
-    console.log(course, 'course info');
-    const watermark = type === "draft" ? "DRAFT" : "LOCKED";
-    const includeSignatures = type === "locked";
-    const pdfBytes = await generateResultPdf({ course, students, watermark, includeSignatures });
-    // Download PDF
-    const blob = new Blob([pdfBytes.buffer as ArrayBuffer], { type: "application/pdf" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${course.code || "result"}_${type}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => {
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }, 100);
+  // Download PDF from backend API using window.open to avoid double download
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "";
+  const url = `${baseUrl}/api/teacher/courses/${courseId}/results/pdf?type=${type}`;
+  window.open(url, "_blank");
   }
 
   const calculateResult = useCallback(
