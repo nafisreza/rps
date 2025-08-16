@@ -16,6 +16,7 @@ export async function GET(req: NextRequest, context: { params: Promise<{ courseI
       semester: true,
       department: { select: { name: true } },
       program: { select: { name: true } },
+      teacher: { select: { name: true } },
     },
   });
   const enrollments = await prisma.enrollment.findMany({
@@ -31,8 +32,8 @@ export async function GET(req: NextRequest, context: { params: Promise<{ courseI
 // POST: Save marks for all students (draft or submit)
 export async function POST(req: NextRequest, context: { params: Promise<{ courseId: string }> }) {
   const { courseId } = await context.params;
-  const { marks, submit } = await req.json(); // marks: { [enrollmentId]: { ...fields } }
-  // TODO: Auth: Only allow teacher of this course
+  const { marks, submit } = await req.json();
+
   for (const [enrollmentId, mRaw] of Object.entries(marks)) {
     const m = (typeof mRaw === 'object' && mRaw !== null ? mRaw : {}) as {
       attendance?: number;
