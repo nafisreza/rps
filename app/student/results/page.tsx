@@ -51,7 +51,6 @@ export default async function StudentResultsPage() {
             {enrolledCourses.length === 0 ? (
               <p className="text-gray-500">No enrolled courses found.</p>
             ) : (
-              // ...existing code...
               <table className="min-w-full text-sm border rounded-lg overflow-hidden">
                 <thead className="bg-yellow-50">
                   <tr>
