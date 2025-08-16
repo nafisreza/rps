@@ -1,8 +1,9 @@
 "use client";
 
-import { Check, Send } from "lucide-react";
+import { Check, Send, FileDown } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { toast as sonnerToast } from "sonner";
+import { generateResultPdf, ResultCourse, ResultStudent } from "../../../../../lib/generateResultPdf";
 
 async function fetchCourseData(courseId: string) {
   const res = await fetch(`/api/teacher/courses/${courseId}/results`, {
@@ -22,6 +23,8 @@ export default function TeacherCourseResultsPage({
   const [credit, setCredit] = useState<number>(3);
   const [course, setCourse] = useState<any>(null);
   const [courseId, setCourseId] = useState<string>("");
+  const [drafted, setDrafted] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const courseInfo = course || {};
 
   useEffect(() => {
@@ -94,9 +97,61 @@ export default function TeacherCourseResultsPage({
     });
     if (res.ok) {
       sonnerToast.success(submit ? "Submitted for approval!" : "Draft saved!");
+      if (submit) {
+        setSubmitted(true);
+      } else {
+        setDrafted(true);
+      }
     } else {
       sonnerToast.error("Failed to save. Please try again.");
     }
+  }
+
+  async function handleDownloadPdf(type: "draft" | "locked") {
+    // Prepare students data for PDF
+    const students: ResultStudent[] = getSortedEnrollments(enrollments).map((enr: any) => {
+      const m = marks[enr.id] || {};
+      const result = calculateResult(m);
+      // Sum best 3 quizzes for PDF
+      const quizzes = [m.quiz1 || 0, m.quiz2 || 0, m.quiz3 || 0, m.quiz4 || 0].sort((a, b) => b - a).slice(0, 3);
+      const quiz = quizzes.reduce((a, b) => a + b, 0);
+      return {
+        studentId: enr.student.studentId,
+        name: enr.student.name,
+        attendance: m.attendance,
+        quiz,
+        midterm: m.midterm,
+        final: m.final,
+        total: result.total,
+        grade: result.grade,
+      };
+    });
+    // courseInfo for PDF Generation
+    const course: ResultCourse = {
+      name: courseInfo.name,
+      code: courseInfo.code,
+      credit: courseInfo.credit,
+      department: courseInfo.department ? { name: courseInfo.department.name } : undefined,
+      program: courseInfo.program ? { name: courseInfo.program.name } : undefined,
+      faculty: courseInfo.teacher ? { name: courseInfo.teacher.name } : undefined,
+    };
+
+    console.log(course, 'course info');
+    const watermark = type === "draft" ? "DRAFT" : "LOCKED";
+    const includeSignatures = type === "locked";
+    const pdfBytes = await generateResultPdf({ course, students, watermark, includeSignatures });
+    // Download PDF
+    const blob = new Blob([pdfBytes.buffer as ArrayBuffer], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${course.code || "result"}_${type}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 100);
   }
 
   const calculateResult = useCallback(
@@ -407,27 +462,42 @@ export default function TeacherCourseResultsPage({
         </table>
       </div>
 
-      <div className="mt-6 flex flex-col sm:flex-row gap-3 sm:gap-6 justify-end">
-        <button
-          type="button"
-          className="px-6 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold shadow-sm transition border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-200"
-          onClick={() => saveMarks(false)}
-        >
-          <span className="inline-flex items-center gap-2">
-            <Check className="w-4 h-4" />
-            Save as Draft
-          </span>
-        </button>
-        <button
-          type="button"
-          className="px-6 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-semibold shadow-sm transition"
-          onClick={() => saveMarks(true)}
-        >
-          <span className="inline-flex items-center gap-2">
-            <Send className="w-4 h-4" />
-            Submit for Approval
-          </span>
-        </button>
+      <div className="mt-6 flex flex-col gap-3 justify-end text-sm">
+        <div className="flex gap-4 justify-end w-full mb-2">
+          <button
+            type="button"
+            className="px-3 py-2 flex items-center rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold shadow-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-200 text-base"
+            onClick={() => saveMarks(false)}
+          >
+            <Check className="w-5 h-5 mr-2" /> Draft
+          </button>
+          <button
+            type="button"
+            className="px-3 py-2 flex items-center rounded-lg bg-green-100 hover:bg-green-200 text-green-700 font-semibold shadow-sm border border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 text-base"
+            onClick={() => saveMarks(true)}
+          >
+            <Send className="w-5 h-5 mr-2" /> Submit
+          </button>
+        </div>
+        <p className="text-end text-xs mt-4">Download PDF</p>
+        <div className="flex gap-2 justify-end w-full">
+          <button
+            type="button"
+            className={`px-3 py-2 flex items-center rounded-md font-medium shadow-sm border focus:outline-none focus:ring-2 text-xs ${!drafted ? 'bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed' : 'bg-blue-100 hover:bg-blue-200 text-blue-900 border-blue-200 cursor-pointer'}`}
+            onClick={() => handleDownloadPdf("draft")}
+            disabled={!drafted}
+          >
+            <FileDown className="w-3 h-3 mr-1" /> Draft
+          </button>
+          <button
+            type="button"
+            className={`px-3 py-2 flex items-center rounded-md font-medium shadow-sm border focus:outline-none focus:ring-2 text-xs ${!submitted ? 'bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed' : 'bg-green-100 hover:bg-green-200 text-green-900 border-green-300 cursor-pointer'}`}
+            onClick={() => handleDownloadPdf("locked")}
+            disabled={!submitted}
+          >
+            <FileDown className="w-3 h-3 mr-1" /> Locked
+          </button>
+        </div>
       </div>
     </div>
   );
