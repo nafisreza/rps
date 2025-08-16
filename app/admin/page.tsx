@@ -1,3 +1,6 @@
+
+"use client";
+import { useEffect, useState } from "react";
 import DashboardStatCard from "./components/DashboardStatCard";
 import DashboardLinkCard from "./components/DashboardLinkCard";
 import {
@@ -11,23 +14,48 @@ import {
   FaChartBar,
 } from "react-icons/fa";
 
-export default async function AdminDashboard() {
-  // Fetch stats from API endpoints
-  const [studentsRes, teachersRes, coursesRes, departmentsRes] =
-    await Promise.all([
-      fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/users?role=student`),
-      fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/users?role=teacher`),
-      fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/courses`),
-      fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/departments`),
-    ]);
-  const studentsData = await studentsRes.json();
-  const teachersData = await teachersRes.json();
-  const coursesData = await coursesRes.json();
-  const departmentsData = await departmentsRes.json();
-  const numStudents = studentsData?.students?.length || 0;
-  const numTeachers = teachersData?.teachers?.length || 0;
-  const numCourses = coursesData?.courses?.length || 0;
-  const numDepartments = departmentsData?.departments?.length || 0;
+export default function AdminDashboard() {
+  const [stats, setStats] = useState<{
+    numStudents: number;
+    numTeachers: number;
+    numCourses: number;
+    numDepartments: number;
+    error: string | null;
+  }>({
+    numStudents: 0,
+    numTeachers: 0,
+    numCourses: 0,
+    numDepartments: 0,
+    error: null,
+  });
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const [studentsRes, teachersRes, coursesRes, departmentsRes] = await Promise.all([
+          fetch("/api/admin/users?role=student"),
+          fetch("/api/admin/users?role=teacher"),
+          fetch("/api/admin/courses"),
+          fetch("/api/departments"),
+        ]);
+        const studentsData = await studentsRes.json();
+        const teachersData = await teachersRes.json();
+        const coursesData = await coursesRes.json();
+        const departmentsData = await departmentsRes.json();
+        setStats({
+          numStudents: studentsData?.students?.length || 0,
+          numTeachers: teachersData?.teachers?.length || 0,
+          numCourses: coursesData?.courses?.length || 0,
+          numDepartments: departmentsData?.departments?.length || 0,
+          error: null,
+        });
+      } catch {
+        setStats((prev) => ({ ...prev, error: "Failed to fetch stats" }));
+      }
+    }
+    fetchStats();
+  }, []);
+
   // Determine semester
   const now = new Date();
   const month = now.getMonth() + 1;
@@ -37,25 +65,25 @@ export default async function AdminDashboard() {
   const statCards = [
     {
       label: "Students",
-      value: numStudents,
+      value: stats.numStudents,
       icon: <FaUserGraduate />,
       iconBgColor: "#67AEFF",
     },
     {
       label: "Teachers",
-      value: numTeachers,
+      value: stats.numTeachers,
       icon: <FaChalkboardTeacher />,
       iconBgColor: "#45DCBE",
     },
     {
       label: "Courses",
-      value: numCourses,
+      value: stats.numCourses,
       icon: <FaBook />,
       iconBgColor: "#FFC267",
     },
     {
       label: "Departments",
-      value: numDepartments,
+      value: stats.numDepartments,
       icon: <FaBuilding />,
       iconBgColor: "#FF637E",
     },
@@ -91,11 +119,15 @@ export default async function AdminDashboard() {
       icon: <FaChartBar />,
     },
   ];
+
   return (
     <div className="flex flex-col p-12">
       <div className="flex flex-1">
         <main className="flex-1">
           <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
+          {stats.error && (
+            <div className="text-red-500 mb-4">{stats.error}</div>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-12">
             {statCards.map((card) => (
               <DashboardStatCard key={card.label} {...card} />
