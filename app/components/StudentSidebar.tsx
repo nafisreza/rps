@@ -4,6 +4,7 @@ import Link from "next/link";
 
 const navItems = [
   { name: "Dashboard", href: "/student", icon: HomeIcon },
+  { name: "Courses", href: "/student/courses", icon: AcademicCapIcon },
   { name: "Results", href: "/student/results", icon: ClipboardDocumentListIcon },
   { name: "Analytics", href: "/student/analytics", icon: ChartBarIcon },
   { name: "Transcripts", href: "/student/transcripts", icon: AcademicCapIcon },
