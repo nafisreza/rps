@@ -92,7 +92,6 @@ export async function POST(req: NextRequest, context: { params: Promise<{ course
       });
     }
   }
-  // Update CourseResultStatus based on draft/submit
   // Find semester from course
   const course = await prisma.course.findUnique({ where: { id: courseId }, select: { semester: true } });
   const semester = course?.semester || 1;
