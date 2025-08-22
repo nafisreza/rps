@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, Send, FileDown } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { useState, useEffect, useCallback } from "react";
 import { toast as sonnerToast } from "sonner";
 
@@ -8,8 +9,18 @@ async function fetchCourseData(courseId: string) {
   const res = await fetch(`/api/teacher/courses/${courseId}/results`, {
     cache: "no-store",
   });
-  if (!res.ok) return { enrollments: [], course: { credit: 3 } };
-  return await res.json();
+  if (!res.ok) return { enrollments: [], course: { credit: 3 }, resultStatus: "PENDING" };
+  const data = await res.json();
+  // Fetch from CourseResultStatus for this course and semester
+  let resultStatus = "PENDING";
+  try {
+    const statusRes = await fetch(`/api/teacher/courses/${courseId}/results/status`, { cache: "no-store" });
+    if (statusRes.ok) {
+      const statusData = await statusRes.json();
+      resultStatus = statusData?.status || "PENDING";
+    }
+  } catch {}
+  return { ...data, resultStatus };
 }
 
 export default function TeacherCourseResultsPage({
@@ -22,18 +33,18 @@ export default function TeacherCourseResultsPage({
   const [credit, setCredit] = useState<number>(3);
   const [course, setCourse] = useState<any>(null);
   const [courseId, setCourseId] = useState<string>("");
-  const [drafted, setDrafted] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [resultStatus, setResultStatus] = useState<string>("PENDING");
   const courseInfo = course || {};
 
   useEffect(() => {
     (async () => {
       const { courseId } = await params;
       setCourseId(courseId);
-      fetchCourseData(courseId).then(({ enrollments, course }) => {
+      fetchCourseData(courseId).then(({ enrollments, course, resultStatus }) => {
         setEnrollments(enrollments);
         setCredit(course?.credit || 3);
         setCourse(course);
+        setResultStatus(resultStatus || "PENDING");
         // Pre-fill marks if results exist
         const initialMarks: any = {};
         enrollments.forEach((enr: any) => {
@@ -96,11 +107,10 @@ export default function TeacherCourseResultsPage({
     });
     if (res.ok) {
       sonnerToast.success(submit ? "Submitted for approval!" : "Draft saved!");
-      if (submit) {
-        setSubmitted(true);
-      } else {
-        setDrafted(true);
-      }
+      // Refetch status from backend after save
+      fetchCourseData(courseId).then(({ resultStatus }) => {
+        setResultStatus(resultStatus || "PENDING");
+      });
     } else {
       sonnerToast.error("Failed to save. Please try again.");
     }
@@ -173,7 +183,24 @@ export default function TeacherCourseResultsPage({
 
   return (
     <div className="mx-auto p-6">
-      <h2 className="text-xl font-bold text-gray-700 mb-4">Marks Entry</h2>
+      <div className="flex justify-between">
+              <h2 className="text-xl font-bold text-gray-700 mb-4">Marks Entry</h2>
+      <div className="mb-4 text-right">
+        <Badge
+          variant={
+            resultStatus === "PENDING" ? "secondary" :
+            resultStatus === "DRAFT" ? "primary" :
+            resultStatus === "SUBMITTED" ? "warning" :
+            resultStatus === "APPROVED" ? "success" : "secondary"
+          }
+        >
+          {resultStatus === "PENDING" && "Pending"}
+          {resultStatus === "DRAFT" && "Drafted"}
+          {resultStatus === "SUBMITTED" && "Waiting for approval"}
+          {resultStatus === "APPROVED" && "Approved"}
+        </Badge>
+      </div>
+      </div>
       <div className="mb-6 text-center">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
           Course: {courseInfo.name || "Course"}
@@ -425,15 +452,17 @@ export default function TeacherCourseResultsPage({
         <div className="flex gap-4 justify-end w-full mb-2">
           <button
             type="button"
-            className="px-3 py-2 flex items-center rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold shadow-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-200 text-base"
+            className={`px-3 py-2 flex items-center rounded-lg font-semibold shadow-sm border text-base ${resultStatus !== "PENDING" ? "bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed" : "bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300 cursor-pointer"}`}
             onClick={() => saveMarks(false)}
+            disabled={resultStatus !== "PENDING"}
           >
             <Check className="w-5 h-5 mr-2" /> Draft
           </button>
           <button
             type="button"
-            className="px-3 py-2 flex items-center rounded-lg bg-green-100 hover:bg-green-200 text-green-700 font-semibold shadow-sm border border-green-200 focus:outline-none focus:ring-2 focus:ring-green-200 text-base"
+            className={`px-3 py-2 flex items-center rounded-lg font-semibold shadow-sm border text-base ${resultStatus !== "DRAFT" ? "bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed" : "bg-green-100 hover:bg-green-200 text-green-700 border-green-200 cursor-pointer"}`}
             onClick={() => saveMarks(true)}
+            disabled={resultStatus !== "DRAFT"}
           >
             <Send className="w-5 h-5 mr-2" /> Submit
           </button>
@@ -442,17 +471,17 @@ export default function TeacherCourseResultsPage({
         <div className="flex gap-2 justify-end w-full">
           <button
             type="button"
-            className={`px-3 py-2 flex items-center rounded-md font-medium shadow-sm border focus:outline-none focus:ring-2 text-xs ${!drafted ? 'bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed' : 'bg-blue-100 hover:bg-blue-200 text-blue-900 border-blue-200 cursor-pointer'}`}
+            className={`px-3 py-2 flex items-center rounded-md font-medium shadow-sm border focus:outline-none focus:ring-2 text-xs ${resultStatus !== "DRAFT" ? 'bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed' : 'bg-blue-100 hover:bg-blue-200 text-blue-900 border-blue-200 cursor-pointer'}`}
             onClick={() => handleDownloadPdf("draft")}
-            disabled={!drafted}
+            disabled={resultStatus !== "DRAFT"}
           >
             <FileDown className="w-3 h-3 mr-1" /> Draft
           </button>
           <button
             type="button"
-            className={`px-3 py-2 flex items-center rounded-md font-medium shadow-sm border focus:outline-none focus:ring-2 text-xs ${!submitted ? 'bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed' : 'bg-green-100 hover:bg-green-200 text-green-900 border-green-300 cursor-pointer'}`}
+            className={`px-3 py-2 flex items-center rounded-md font-medium shadow-sm border focus:outline-none focus:ring-2 text-xs ${resultStatus !== "SUBMITTED" && resultStatus !== "APPROVED" ? 'bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed' : 'bg-green-100 hover:bg-green-200 text-green-900 border-green-300 cursor-pointer'}`}
             onClick={() => handleDownloadPdf("locked")}
-            disabled={!submitted}
+            disabled={resultStatus !== "SUBMITTED" && resultStatus !== "APPROVED"}
           >
             <FileDown className="w-3 h-3 mr-1" /> Locked
           </button>
