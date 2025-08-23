@@ -29,8 +29,20 @@ export async function GET(req: NextRequest, context: { params: Promise<{ courseI
     },
   });
 
+  // Sort enrollments by studentId ascending
+  const sortedEnrollments = [...enrollments].sort((a, b) => {
+    const idA = a.student.studentId || "";
+    const idB = b.student.studentId || "";
+    const numA = Number(idA);
+    const numB = Number(idB);
+    if (!isNaN(numA) && !isNaN(numB)) {
+      return numA - numB;
+    }
+    return idA.localeCompare(idB);
+  });
+
   // Prepare students data for PDF
-  const students = enrollments.map((enr) => {
+  const students = sortedEnrollments.map((enr) => {
     const m = enr.results[0] || {};
     return {
       studentId: enr.student.studentId,
