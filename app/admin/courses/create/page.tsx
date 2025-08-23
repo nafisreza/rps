@@ -38,10 +38,18 @@ export default function CreateCoursePage() {
     fetch("/api/departments")
       .then((res) => res.json())
       .then((data) => setDepartments(data.departments || []));
-    fetch("/api/admin/users?role=teacher")
-      .then((res) => res.json())
-      .then((data) => setTeachers(data.teachers || []));
   }, []);
+
+  useEffect(() => {
+    if (form.departmentId) {
+      fetch(`/api/admin/users?role=teacher&departmentId=${form.departmentId}`)
+        .then((res) => res.json())
+        .then((data) => setTeachers(data.teachers || []));
+    } else {
+      setTeachers([]);
+      setForm(f => ({ ...f, teacherId: "" }));
+    }
+  }, [form.departmentId]);
 
   useEffect(() => {
     if (form.departmentId) {
