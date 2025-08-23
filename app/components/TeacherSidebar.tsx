@@ -1,11 +1,10 @@
 import { FC } from "react";
-import { HomeIcon, ClipboardDocumentListIcon, BookOpenIcon, ChartBarIcon, Cog6ToothIcon } from "@heroicons/react/24/outline";
+import { HomeIcon, BookOpenIcon, ChartBarIcon, Cog6ToothIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 
 const navItems = [
   { name: "Dashboard", href: "/teacher", icon: HomeIcon },
   { name: "Courses", href: "/teacher/courses", icon: BookOpenIcon },
-  { name: "Marks Entry", href: "/teacher/marks", icon: ClipboardDocumentListIcon },
   { name: "Analytics", href: "/teacher/analytics", icon: ChartBarIcon },
   { name: "Settings", href: "/teacher/settings", icon: Cog6ToothIcon },
 ];
