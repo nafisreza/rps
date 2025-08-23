@@ -468,9 +468,9 @@ export default function TeacherCourseResultsPage({
         <div className="flex gap-4 justify-end w-full mb-2">
           <button
             type="button"
-            className={`px-3 py-2 flex items-center rounded-lg font-semibold shadow-sm border text-base ${resultStatus !== "PENDING" ? "bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed" : "bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300 cursor-pointer"}`}
+            className={`px-3 py-2 flex items-center rounded-lg font-semibold shadow-sm border text-base ${!(resultStatus === "PENDING" || resultStatus === "DRAFT") ? "bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed" : "bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300 cursor-pointer"}`}
             onClick={() => saveMarks(false)}
-            disabled={resultStatus !== "PENDING"}
+            disabled={!(resultStatus === "PENDING" || resultStatus === "DRAFT")}
           >
             <Check className="w-5 h-5 mr-2" /> Draft
           </button>
