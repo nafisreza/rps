@@ -126,18 +126,34 @@ export default function TeacherCourseResultsPage({
   const calculateResult = useCallback(
     (m: any) => {
       const totalMark = credit * 100;
-      const attendanceMark = ((m.attendance || 0) / 100) * (totalMark * 0.1);
+      // Max marks for each component
+      const attendanceMax = credit * 100 * 0.1;
+      const quizMax = 3 * credit * 100 * 0.05;
+      const midtermMax = credit * 100 * 0.25;
+      const finalMax = credit * 100 * 0.5;
+      // console.log("final max", finalMax);
+      // console.log("quiz max", quizMax);
+      // console.log("midterm max", midtermMax);
+      // console.log("attendance max", attendanceMax);
+
+      // Normalize each component by its actual max
+      const attendanceMark = Math.min(m.attendance || 0, attendanceMax);
       const quizzes = [m.quiz1 || 0, m.quiz2 || 0, m.quiz3 || 0, m.quiz4 || 0]
         .sort((a, b) => b - a)
         .slice(0, 3);
-      const quizMark =
-        (quizzes.reduce((a, b) => a + b, 0) / 300) * (totalMark * 0.15);
-      const midtermMark = ((m.midterm || 0) / 100) * (totalMark * 0.25);
-      const finalMark = ((m.final || 0) / 100) * (totalMark * 0.5);
+      const quizMark = Math.min(quizzes.reduce((a, b) => a + b, 0), quizMax);
+      const midtermMark = Math.min(m.midterm || 0, midtermMax);
+      const finalMark = Math.min(m.final || 0, finalMax);
+      // console.log("quiz mark", quizMark);
+      // console.log("midterm mark", midtermMark);
+      // console.log("attendance mark", attendanceMark);
+      // console.log("final mark", finalMark);
       const total = attendanceMark + quizMark + midtermMark + finalMark;
+      // console.log("total", total);
       let grade = "F",
         gradePoint = 0;
       const percent = (total / totalMark) * 100;
+      // console.log("percentage", percent);
       if (percent >= 80) [grade, gradePoint] = ["A+", 4.0];
       else if (percent >= 75) [grade, gradePoint] = ["A", 3.75];
       else if (percent >= 70) [grade, gradePoint] = ["A-", 3.5];
