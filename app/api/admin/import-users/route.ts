@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
             teacher: {
               create: {
                 name: String(record.name),
-                // @ts-expect-error: allow string to enum assignment for import
+                code: String(record.code),
                 designation: String(record.designation),
                 email: String(record.email),
                 department: { connect: { id: department.id } },
@@ -97,6 +97,6 @@ export async function POST(req: NextRequest) {
     }
     return NextResponse.json({ users });
   } catch (e) {
-    return NextResponse.json({ error: "Failed to import users" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to import users", details: e }, { status: 500 });
   }
 }
