@@ -11,6 +11,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { generatePassword } from "../../../../lib/utils";
 
 type Department = { id: string; name: string };
 
@@ -20,17 +21,6 @@ export default function UserCreateForm() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-
-  // Password generator
-  function generatePassword(length = 12) {
-    const charset =
-      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?";
-    let password = "";
-    for (let i = 0, n = charset.length; i < length; ++i) {
-      password += charset.charAt(Math.floor(Math.random() * n));
-    }
-    return password;
-  }
 
   const [departmentId, setDepartmentId] = useState("");
   const [batch, setBatch] = useState("");
