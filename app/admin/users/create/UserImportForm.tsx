@@ -73,7 +73,7 @@ export default function UserImportForm() {
         ) : (
           <>
             File must have columns:{" "}
-            <b>email, password, name, department, designation</b>
+            <b>email, password, name, department, code, designation</b>
           </>
         )}
       </div>

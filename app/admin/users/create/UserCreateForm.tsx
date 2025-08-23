@@ -23,7 +23,8 @@ export default function UserCreateForm() {
 
   // Password generator
   function generatePassword(length = 12) {
-    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?";
+    const charset =
+      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?";
     let password = "";
     for (let i = 0, n = charset.length; i < length; ++i) {
       password += charset.charAt(Math.floor(Math.random() * n));
@@ -36,6 +37,7 @@ export default function UserCreateForm() {
   const [studentId, setStudentId] = useState("");
   const [currentSemester, setCurrentSemester] = useState(0);
   const [designation, setDesignation] = useState("");
+  const [teacherCode, setTeacherCode] = useState("");
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(false);
   const [programs, setPrograms] = useState<{ id: string; name: string }[]>([]);
@@ -70,6 +72,7 @@ export default function UserCreateForm() {
     }
     if (role === "TEACHER") {
       body.designation = designation;
+      body.code = teacherCode;
     }
     const res = await fetch("/api/admin/create-user", {
       method: "POST",
@@ -87,6 +90,7 @@ export default function UserCreateForm() {
       setStudentId("");
       setDesignation("");
       setProgramId("");
+      setTeacherCode("");
     } else {
       let errorMsg = "Failed to create user.";
       try {
@@ -147,7 +151,10 @@ export default function UserCreateForm() {
           />
         </div>
         <div className="flex flex-col">
-          <label htmlFor="password" className="mb-1 text-sm font-medium flex items-center justify-between">
+          <label
+            htmlFor="password"
+            className="mb-1 text-sm font-medium flex items-center justify-between"
+          >
             <span>Password</span>
             <button
               type="button"
@@ -269,26 +276,41 @@ export default function UserCreateForm() {
           </>
         )}
         {role === "TEACHER" && (
-          <div className="flex flex-col">
-            <label htmlFor="designation" className="mb-1 text-sm font-medium">
-              Designation
-            </label>
-            <Select value={designation} onValueChange={setDesignation}>
-              <SelectTrigger id="designation" className="w-full">
-                <SelectValue placeholder="Select designation" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Professor">Professor</SelectItem>
-                <SelectItem value="Assistant Professor">
-                  Assistant Professor
-                </SelectItem>
-                <SelectItem value="Associate Professor">
-                  Associate Professor
-                </SelectItem>
-                <SelectItem value="Lecturer">Lecturer</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <>
+            <div className="flex flex-col">
+              <label htmlFor="teacherCode" className="mb-1 text-sm font-medium">
+                Teacher Code
+              </label>
+              <Input
+                id="teacherCode"
+                type="text"
+                placeholder="e.g. AA"
+                value={teacherCode}
+                onChange={(e) => setTeacherCode(e.target.value)}
+                required
+              />
+            </div>
+            <div className="flex flex-col">
+              <label htmlFor="designation" className="mb-1 text-sm font-medium">
+                Designation
+              </label>
+              <Select value={designation} onValueChange={setDesignation}>
+                <SelectTrigger id="designation" className="w-full">
+                  <SelectValue placeholder="Select designation" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Professor">Professor</SelectItem>
+                  <SelectItem value="Assistant Professor">
+                    Assistant Professor
+                  </SelectItem>
+                  <SelectItem value="Associate Professor">
+                    Associate Professor
+                  </SelectItem>
+                  <SelectItem value="Lecturer">Lecturer</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </>
         )}
       </div>
       <div>
