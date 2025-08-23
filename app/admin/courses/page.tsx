@@ -312,6 +312,9 @@ export default function AdminCoursesPage() {
                 Teacher
               </th>
               <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                Enrollments
+              </th>
+              <th className="px-4 py-3 text-left font-semibold text-gray-700">
                 Actions
               </th>
             </tr>
@@ -341,7 +344,7 @@ export default function AdminCoursesPage() {
                   <td className="px-4 py-4">{course.department?.name}</td>
                   <td className="px-4 py-4">{course.program?.name || "-"} </td>
                   <td className="px-4 py-4">{course.teacher?.name || "-"}</td>
-                  <td className="px-4 py-4 flex gap-2">
+                  <td className="px-4 py-4">
                     <Button
                       size="sm"
                       variant="default"
@@ -349,8 +352,10 @@ export default function AdminCoursesPage() {
                         router.push(`/admin/courses/${course.id}/enrollments`)
                       }
                     >
-                      Enrollments
+                      View
                     </Button>
+                  </td>
+                  <td className="px-4 py-4 flex gap-2">
                     <Button
                       size="sm"
                       variant="outline"
