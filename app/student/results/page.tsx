@@ -32,7 +32,9 @@ export default async function StudentResultsPage() {
     results = data.results || [];
   }
 
-  console.log(results, '<=== Student Results ===>');
+  const cgpaRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/student/${studentId}/cgpa`);
+    const cgpaData = await cgpaRes.json();
+    const cgpa = cgpaData.cgpa;
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -40,9 +42,9 @@ export default async function StudentResultsPage() {
       <div className="flex flex-1">
         <StudentSidebar />
         <main className="flex-1 p-8 overflow-y-auto">
-          <h1 className="text-3xl font-bold mb-6">My Results</h1>
-          <div className="mt-4 w-full">
-            <h3 className="text-lg font-semibold text-yellow-700 mb-4">Results for this semester</h3>
+          <h1 className="text-2xl font-bold mb-2">My Results</h1>
+          <span className="text-sm text-gray-500">These are your results for the current semester:</span>
+          <div className="my-6 w-full">
             {results.length === 0 ? (
               <p className="text-gray-500">No approved results found.</p>
             ) : (
@@ -74,6 +76,7 @@ export default async function StudentResultsPage() {
               </table>
             )}
           </div>
+          <p className="text-sm text-gray-500 my-2">CGPA: {cgpa}</p>
         </main>
       </div>
     </div>
