@@ -139,6 +139,17 @@ export default function AdminCoursesPage() {
     setShowEditModal(true);
   };
 
+    // Fetch programs for edit modal when department changes
+  useEffect(() => {
+    if (showEditModal && editForm?.departmentId) {
+      fetch(`/api/departments?id=${editForm.departmentId}`)
+        .then((res) => res.json())
+        .then((data) => setPrograms(data.programs || []));
+    } else if (showEditModal) {
+      setPrograms([]);
+    }
+  }, [showEditModal, editForm?.departmentId]);
+
   const handleEditSave = async () => {
     if (!editForm?.id) return;
     const res = await fetch("/api/admin/courses", {
@@ -444,7 +455,7 @@ export default function AdminCoursesPage() {
                 <Select
                   value={editForm.departmentId}
                   onValueChange={(value) =>
-                    setEditForm({ ...editForm, departmentId: value })
+                    setEditForm({ ...editForm, departmentId: value, programId: "" })
                   }
                   required
                 >
