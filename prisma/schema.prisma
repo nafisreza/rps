@@ -58,6 +58,7 @@ model Student {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   enrollments Enrollment[]
+  semesterGPAs SemesterGPA[]
 }
 
 model Teacher {
@@ -153,3 +154,15 @@ enum ResultStatus {
   SUBMITTED
   APPROVED
 }
+
+model SemesterGPA {
+  id         String   @id @default(uuid())
+  student    Student  @relation(fields: [studentId], references: [id])
+  studentId  String
+  semester   Int
+  gpa        Float
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  @@unique([studentId, semester])
+}
+
