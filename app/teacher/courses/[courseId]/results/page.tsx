@@ -4,6 +4,7 @@ import { Check, Send, FileDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useState, useEffect, useCallback } from "react";
 import { toast as sonnerToast } from "sonner";
+import { Input } from "@/components/ui/input";
 
 async function fetchCourseData(courseId: string) {
   const res = await fetch(`/api/teacher/courses/${courseId}/results`, {
@@ -197,6 +198,10 @@ export default function TeacherCourseResultsPage({
     });
   }
 
+  const disabled = resultStatus === "SUBMITTED" || resultStatus === "APPROVED";
+
+  console.log('Disabled:', disabled);
+
   return (
     <div className="mx-auto p-6">
       <div className="flex justify-between">
@@ -336,7 +341,7 @@ export default function TeacherCourseResultsPage({
                       {enrollment.student.studentId || "-"}
                     </td>
                     <td className="px-2 py-2">
-                      <input
+                      <Input
                         type="number"
                         min={0}
                         max={100}
@@ -348,11 +353,12 @@ export default function TeacherCourseResultsPage({
                             Number(e.target.value)
                           )
                         }
-                        className="w-20 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 px-2 py-1 outline-none transition shadow-sm"
+                        disabled={disabled}
+                        className="w-20"
                       />
                     </td>
                     <td className="px-2 py-2">
-                      <input
+                      <Input
                         type="number"
                         min={0}
                         max={credit * 100 * 0.05}
@@ -364,11 +370,12 @@ export default function TeacherCourseResultsPage({
                             Number(e.target.value)
                           )
                         }
-                        className="w-20 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 px-2 py-1 outline-none transition shadow-sm"
+                        disabled={disabled}
+                        className="w-20"
                       />
                     </td>
                     <td className="px-2 py-2">
-                      <input
+                      <Input
                         type="number"
                         min={0}
                         max={credit * 100 * 0.05}
@@ -380,11 +387,12 @@ export default function TeacherCourseResultsPage({
                             Number(e.target.value)
                           )
                         }
-                        className="w-20 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 px-2 py-1 outline-none transition shadow-sm"
+                        disabled={disabled}
+                        className="w-20"
                       />
                     </td>
                     <td className="px-2 py-2">
-                      <input
+                      <Input
                         type="number"
                         min={0}
                         max={credit * 100 * 0.05}
@@ -396,11 +404,12 @@ export default function TeacherCourseResultsPage({
                             Number(e.target.value)
                           )
                         }
-                        className="w-20 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 px-2 py-1 outline-none transition shadow-sm"
+                        disabled={disabled}
+                        className="w-20"
                       />
                     </td>
                     <td className="px-2 py-2">
-                      <input
+                      <Input
                         type="number"
                         min={0}
                         max={credit * 100 * 0.05}
@@ -412,11 +421,12 @@ export default function TeacherCourseResultsPage({
                             Number(e.target.value)
                           )
                         }
-                        className="w-20 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 px-2 py-1 outline-none transition shadow-sm"
+                        disabled={disabled}
+                        className="w-20"
                       />
                     </td>
                     <td className="px-2 py-2">
-                      <input
+                      <Input
                         type="number"
                         min={0}
                         max={credit * 100 * 0.25}
@@ -428,11 +438,12 @@ export default function TeacherCourseResultsPage({
                             Number(e.target.value)
                           )
                         }
-                        className="w-20 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 px-2 py-1 outline-none transition shadow-sm"
+                        disabled={disabled}
+                        className="w-20"
                       />
                     </td>
                     <td className="px-2 py-2">
-                      <input
+                      <Input
                         type="number"
                         min={0}
                         max={credit * 100 * 0.5}
@@ -444,7 +455,8 @@ export default function TeacherCourseResultsPage({
                             Number(e.target.value)
                           )
                         }
-                        className="w-20 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 px-2 py-1 outline-none transition shadow-sm"
+                        disabled={disabled}
+                        className="w-20"
                       />
                     </td>
                     <td className="px-2 py-2 font-semibold text-blue-900">
