@@ -7,7 +7,7 @@ import { signOut } from "next-auth/react";
 const StudentNavbar: FC<{ user: SessionUser | undefined }> = ({ user }) => {
   const [open, setOpen] = useState(false);
   return (
-    <nav className="h-20 w-full flex items-center justify-between px-8 bg-white shadow border-b border-gray-200 z-10">
+    <nav className="h-20 w-full flex items-center justify-between px-8 bg-white shadow border-b border-gray-200 z-10 sticky top-0">
       <div className="flex items-center gap-4">
         {/* <Image src="/next.svg" alt="Logo" width={32} height={32} /> */}
         <span className="font-bold text-xl text-yellow-700">IUT RPS</span>
