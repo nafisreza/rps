@@ -27,7 +27,7 @@ export default async function StudentCoursesPage() {
   }
   if (studentId) {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-    const coursesRes = await fetch(`${baseUrl}/api/student/${studentId}/courses`);
+    const coursesRes = await fetch(`${baseUrl}/api/student/${studentId}/courses?current`);
     let coursesData = null;
     try {
       coursesData = await coursesRes.json();

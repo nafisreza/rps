@@ -7,6 +7,9 @@ export async function GET(req: NextRequest, context: { params: Promise<{ student
   if (!studentId) {
     return new Response(JSON.stringify({ error: "Missing student id" }), { status: 400 });
   }
+  // Fetch student's current semester
+  const student = await prisma.student.findUnique({ where: { id: studentId }, select: { currentSemester: true } });
+  const currentSemester = student?.currentSemester;
   // Find all enrollments for this student
   const enrollments = await prisma.enrollment.findMany({
     where: { studentId },
@@ -20,7 +23,11 @@ export async function GET(req: NextRequest, context: { params: Promise<{ student
       },
     },
   });
-  // Map to course objects
+  // Get course objects
   const courses = enrollments.map((e) => e.course);
-  return Response.json({ courses });
+  // If ?current is present, filter to only current semester courses
+  const url = new URL(req.url);
+  const onlyCurrent = url.searchParams.has("current");
+  const filteredCourses = onlyCurrent ? courses.filter(c => c.semester === currentSemester) : courses;
+  return Response.json({ courses: filteredCourses });
 }
