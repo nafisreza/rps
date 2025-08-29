@@ -141,8 +141,8 @@ export default function AdminCourseEnrollmentsPage({
                 <TableCell className="px-4 py-2">{student.name}</TableCell>
                 <TableCell className="px-4 py-2">{student.studentId}</TableCell>
                 <TableCell className="px-4 py-2">{student.batch}</TableCell>
-                <TableCell className="px-4 py-2">{courseInfo.program?.name}</TableCell>
-                <TableCell className="px-4 py-2">{courseInfo.department?.name}</TableCell>
+                <TableCell className="px-4 py-2">{courseInfo?.program?.name || "-"}</TableCell>
+                <TableCell className="px-4 py-2">{courseInfo?.department?.name || "-"}</TableCell>
                 <TableCell className="px-4 py-2">{student.email}</TableCell>
               </TableRow>
             ))}
