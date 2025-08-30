@@ -3,8 +3,8 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function GET(req: NextRequest, { params }: { params: { courseId: string } }) {
-  const courseId = params.courseId;
+export async function GET(req: NextRequest, context: { params: { courseId: string } }) {
+  const { courseId } = context.params;
   if (!courseId) {
     return new Response(JSON.stringify({ error: "Missing courseId" }), { status: 400 });
   }
