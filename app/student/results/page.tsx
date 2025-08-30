@@ -37,24 +37,28 @@ export default async function StudentResultsPage() {
     cgpa = data.cgpa;
   }
 
+  const current = semesters.find((s: any) => s.semester === currentSemester);
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <StudentNavbar user={user} />
       <div className="flex flex-1">
         <StudentSidebar />
         <main className="flex-1 p-8 overflow-y-auto">
-          <div className="flex items-center gap-6 mb-4">
+          <div className="flex items-center gap-6 mb-6">
              <h1 className="text-2xl font-bold">My Results</h1>
-             <p className="py-1 bg-amber-100 px-2 text-amber-600 rounded-lg border border-amber-200">CGPA: {cgpa !== null ? cgpa.toFixed(2) : "N/A"}</p>
+             <p className="py-[3px] bg-green-100 px-2 text-green-600 rounded-lg border border-green-200">CGPA: {cgpa !== null ? cgpa.toFixed(2) : "N/A"}</p>
           </div>
           {/* Current semester results */}
-          <h2 className="text-lg font-medium mb-4 text-amber-900">Current Semester</h2>
+          <div className="flex gap-3 items-center mb-4">
+            <h2 className="text-lg font-medium text-amber-900">Current Semester</h2>
+              <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-600 text-xs border border-amber-200">GPA: {current?.gpa !== null ? current?.gpa.toFixed(2) : "N/A"}</span>
+          </div>
           <div className="my-6 w-full">
             {semesters.length === 0 ? (
               <p className="text-gray-500">No results found.</p>
             ) : (
               (() => {
-                const current = semesters.find((s: any) => s.semester === currentSemester);
                 if (!current || !current.courses || current.courses.length === 0) {
                   return <p className="text-gray-500">No results for current semester.</p>;
                 }
