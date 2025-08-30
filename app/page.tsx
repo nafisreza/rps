@@ -42,7 +42,7 @@ export default function Home() {
       const role = session?.user?.role;
       const mustChangePassword = session?.user?.mustChangePassword;
       if (mustChangePassword) {
-        router.push("/change-password");
+        router.push("/auth/change-password");
       } else if (role === "ADMIN") router.push("/admin");
       else if (role === "TEACHER") router.push("/teacher");
       else if (role === "STUDENT") router.push("/student");
@@ -105,7 +105,7 @@ export default function Home() {
           </div>
           <div className="flex flex-col items-end gap-2">
             <a
-              href="/forgot-password"
+              href="/auth/forgot-password"
               className="text-xs text-blue-600 hover:underline mb-1"
               tabIndex={-1}
             >
