@@ -7,7 +7,6 @@ const navItems = [
   { name: "Courses", href: "/student/courses", icon: AcademicCapIcon },
   { name: "Results", href: "/student/results", icon: ClipboardDocumentListIcon },
   { name: "Analytics", href: "/student/analytics", icon: ChartBarIcon },
-  { name: "Grade Sheet", href: "/student/grade-sheet", icon: AcademicCapIcon },
   { name: "Settings", href: "/student/settings", icon: Cog6ToothIcon },
 ];
 
