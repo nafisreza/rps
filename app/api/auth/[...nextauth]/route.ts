@@ -5,6 +5,20 @@ import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
+// Extend session user type
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id?: string;
+      role?: string;
+      mustChangePassword?: boolean;
+      teacherId?: string;
+      studentId?: string;
+      [key: string]: any;
+    };
+  }
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -33,9 +47,9 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
-        token.role = user.role;
-        token.mustChangePassword = user.mustChangePassword;
+        token.id = (user as any).id;
+        token.role = (user as any).role;
+        token.mustChangePassword = (user as any).mustChangePassword;
       }
       return token;
     },
@@ -44,6 +58,13 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
         session.user.mustChangePassword = token.mustChangePassword as boolean;
+        if (token.role === "TEACHER") {
+          const teacher = await prisma.teacher.findUnique({ where: { userId: token.id as string } });
+          (session.user as any).teacherId = teacher?.id;
+        } else if (token.role === "STUDENT") {
+          const student = await prisma.student.findUnique({ where: { userId: token.id as string } });
+          (session.user as any).studentId = student?.id;
+        }
       }
       return session;
     },
