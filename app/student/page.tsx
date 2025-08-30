@@ -42,7 +42,7 @@ export default async function StudentDashboard() {
                 Quick Actions
               </h2>
               <ul className="list-disc ml-5 text-gray-600 space-y-1">
-                <li>Download transcript (PDF)</li>
+                <li>Download Grade Sheet (PDF)</li>
                 <li>Set CGPA target</li>
                 <li>View course improvement suggestions</li>
                 <li>Contact department advisor</li>
