@@ -4,8 +4,8 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 
-export async function GET(req: NextRequest, context: { params: { teacherId: string } }) {
-  const { teacherId } = context.params;
+export async function GET(req: NextRequest, context: { params: Promise<{ teacherId: string }> }) {
+  const { teacherId } = await context.params;
   if (!teacherId) {
     return new Response(JSON.stringify({ error: "Missing teacherId" }), { status: 400 });
   }
