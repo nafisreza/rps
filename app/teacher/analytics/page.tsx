@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import CoursePerformance from "./CoursePerformance";
 import AssessmentAnalytics from "./AssessmentAnalytics";
 import StudentProgress from "./StudentProgress";
-import GradeDistributionPie from "./GradeDistributionPie";
+import GradeDistribution from "./GradeDistribution";
 import { getSession } from "next-auth/react";
 import {
   Select,
@@ -90,7 +90,7 @@ export default function TeacherAnalyticsPage() {
               </div>
               <div className="flex flex-row gap-12 items-center justify-center mb-8">
                 <AssessmentAnalytics analytics={analytics} />
-                <GradeDistributionPie
+                <GradeDistribution
                   gradeDistribution={analytics.gradeDistribution}
                 />
               </div>
