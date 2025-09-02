@@ -137,8 +137,14 @@ export default function TeacherCourseResultsPage({
       // console.log("midterm max", midtermMax);
       // console.log("attendance max", attendanceMax);
 
-      // Normalize each component by its actual max
-      const attendanceMark = Math.min(m.attendance || 0, attendanceMax);
+  // Attendance grading scheme
+  let attendanceMark = 0;
+  const attendancePercent = m.attendance || 0;
+  if (attendancePercent >= 95) attendanceMark = attendanceMax;
+  else if (attendancePercent >= 90) attendanceMark = attendanceMax * 0.8;
+  else if (attendancePercent >= 80) attendanceMark = attendanceMax * 0.4;
+  else if (attendancePercent >= 75) attendanceMark = attendanceMax * 0.2;
+  else attendanceMark = 0;
       const quizzes = [m.quiz1 || 0, m.quiz2 || 0, m.quiz3 || 0, m.quiz4 || 0]
         .sort((a, b) => b - a)
         .slice(0, 3);
