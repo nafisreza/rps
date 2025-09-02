@@ -6,6 +6,7 @@ import StudentSidebar from "@/components/StudentSidebar";
 import StudentNavbar from "@/components/StudentNavbar";
 import StudentAnalyticsCharts from "./StudentAnalyticsCharts";
 import TargetCGPACalculator from "./TargetCGPACalculator";
+import CourseTypePerformance from "./CourseTypePerformance";
 
 export default async function StudentAnalyticsPage() {
   const session = await getServerSession(authOptions);
@@ -40,7 +41,10 @@ export default async function StudentAnalyticsPage() {
         <StudentSidebar />
         <main className="flex-1 p-8 overflow-y-auto">
           <StudentAnalyticsCharts semesters={semesters} />
+          <div className="flex gap-6">
+            <CourseTypePerformance semesters={semesters} />
           <TargetCGPACalculator semesters={semesters} totalSemesters={8} />
+          </div>
         </main>
       </div>
     </div>
