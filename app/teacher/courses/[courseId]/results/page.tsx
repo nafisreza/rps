@@ -35,17 +35,30 @@ export default function TeacherCourseResultsPage({
   const [course, setCourse] = useState<any>(null);
   const [courseId, setCourseId] = useState<string>("");
   const [resultStatus, setResultStatus] = useState<string>("PENDING");
+  const [rejectionReason, setRejectionReason] = useState<string>("");
   const courseInfo = course || {};
 
   useEffect(() => {
     (async () => {
       const { courseId } = await params;
       setCourseId(courseId);
-      fetchCourseData(courseId).then(({ enrollments, course, resultStatus }) => {
+      fetchCourseData(courseId).then(async ({ enrollments, course }) => {
         setEnrollments(enrollments);
         setCredit(course?.credit || 3);
         setCourse(course);
-        setResultStatus(resultStatus || "PENDING");
+        // Fetch status and rejection reason
+        let status = "PENDING";
+        let reason = "";
+        try {
+          const statusRes = await fetch(`/api/teacher/courses/${courseId}/results/status`, { cache: "no-store" });
+          if (statusRes.ok) {
+            const statusData = await statusRes.json();
+            status = statusData?.status || "PENDING";
+            reason = statusData?.rejectionReason || "";
+          }
+        } catch {}
+        setResultStatus(status);
+        setRejectionReason(reason);
         // Pre-fill marks if results exist
         const initialMarks: any = {};
         enrollments.forEach((enr: any) => {
@@ -228,7 +241,12 @@ export default function TeacherCourseResultsPage({
         </Badge>
       </div>
       </div>
-      <div className="mb-6 text-center">
+      <div className="my-4 text-center">
+        {rejectionReason && resultStatus === "DRAFT" && (
+          <div className="mb-4 p-3 bg-red-100 text-red-800 rounded border border-red-300 font-semibold">
+            <span>Rejected by admin. Reason: </span>{rejectionReason}
+          </div>
+        )}
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
           Course: {courseInfo.name || "Course"}
         </h1>
