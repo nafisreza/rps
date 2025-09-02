@@ -54,7 +54,13 @@ export async function POST(req: NextRequest, context: { params: Promise<{ course
     const midtermMax = totalMark * 0.25;
     const finalMax = totalMark * 0.5;
 
-    const attendanceMark = Math.min(m.attendance || 0, attendanceMax);
+  let attendanceMark = 0;
+  const attendancePercent = m.attendance || 0;
+  if (attendancePercent >= 95) attendanceMark = attendanceMax;
+  else if (attendancePercent >= 90) attendanceMark = attendanceMax * 0.8;
+  else if (attendancePercent >= 80) attendanceMark = attendanceMax * 0.4;
+  else if (attendancePercent >= 75) attendanceMark = attendanceMax * 0.2;
+  else attendanceMark = 0;
     const quizzes = [m.quiz1 || 0, m.quiz2 || 0, m.quiz3 || 0, m.quiz4 || 0].sort((a, b) => b - a).slice(0, 3);
     const quizMark = Math.min(quizzes.reduce((a, b) => a + b, 0), quizMax);
     const midtermMark = Math.min(m.midterm || 0, midtermMax);

@@ -44,10 +44,20 @@ export async function GET(req: NextRequest, context: { params: Promise<{ courseI
   // Prepare students data for PDF
   const students = sortedEnrollments.map((enr) => {
     const m = enr.results[0] || {};
+    // Attendance mark calculation
+    const totalMark = course.credit * 100;
+    const attendanceMax = totalMark * 0.1;
+    let attendanceMark = 0;
+    const attendancePercent = m.attendance || 0;
+    if (attendancePercent >= 95) attendanceMark = attendanceMax;
+    else if (attendancePercent >= 90) attendanceMark = attendanceMax * 0.8;
+    else if (attendancePercent >= 80) attendanceMark = attendanceMax * 0.4;
+    else if (attendancePercent >= 75) attendanceMark = attendanceMax * 0.2;
+    else attendanceMark = 0;
     return {
       studentId: enr.student.studentId,
       name: enr.student.name,
-      attendance: m.attendance,
+      attendance: attendanceMark,
       quiz: [m.quiz1 || 0, m.quiz2 || 0, m.quiz3 || 0, m.quiz4 || 0].sort((a, b) => b - a).slice(0, 3).reduce((a, b) => a + b, 0),
       midterm: m.midterm,
       final: m.final,
@@ -70,7 +80,7 @@ export async function GET(req: NextRequest, context: { params: Promise<{ courseI
   const includeSignatures = type === "locked";
   const pdfBytes = await generateResultPdf({ course: courseInfo, students, watermark, includeSignatures });
 
-  return new Response(pdfBytes, {
+  return new Response(Buffer.from(pdfBytes), {
     headers: {
       "Content-Type": "application/pdf",
       "Content-Disposition": `attachment; filename=${course.code || "result"}_${type}.pdf`,
