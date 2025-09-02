@@ -1,4 +1,3 @@
-
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 
@@ -6,9 +5,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   // 1. Create departments
-  const departmentNames = [
-    "CSE", "EEE", "MPE", "CEE", "BTM", "TVE"
-  ];
+  const departmentNames = ["CSE", "EEE", "MPE", "CEE", "BTM", "TVE"];
   const departments = {} as Record<string, any>;
   for (const name of departmentNames) {
     const dept = await prisma.department.upsert({
@@ -21,12 +18,12 @@ async function main() {
 
   // 2. Create programs for each department
   const departmentsWithPrograms = [
-    { name: 'CSE', programs: ['CSE', 'SWE'] },
-    { name: 'MPE', programs: ['ME', 'IPE'] },
-    { name: 'EEE', programs: ['EEE'] },
-    { name: 'CEE', programs: ['CE'] },
-    { name: 'BTM', programs: ['BTM'] },
-    { name: 'TVE', programs: ['TE'] },
+    { name: "CSE", programs: ["CSE", "SWE"] },
+    { name: "MPE", programs: ["ME", "IPE"] },
+    { name: "EEE", programs: ["EEE"] },
+    { name: "CEE", programs: ["CE"] },
+    { name: "BTM", programs: ["BTM"] },
+    { name: "TVE", programs: ["TE"] },
   ];
   const programs = {} as Record<string, any>;
   for (const dept of departmentsWithPrograms) {
@@ -59,7 +56,7 @@ async function main() {
   });
 
   // 4. Create a teacher
-  const teacherPassword = await bcrypt.hash("ajwad123", 10);
+  const teacherPassword = await bcrypt.hash("Ajwad*123", 10);
   await prisma.user.upsert({
     where: { email: "ajwadabrar@iut-dhaka.edu" },
     update: {},
@@ -74,13 +71,14 @@ async function main() {
           department: { connect: { id: departments["CSE"].id } },
           email: "ajwadabrar@iut-dhaka.edu",
           designation: "Lecturer",
+          code: "AA",
         },
       },
     },
   });
 
   // 5. Create a student (assign to CSE Dept and SWE program)
-  const studentPassword = await bcrypt.hash("nafis123", 10);
+  const studentPassword = await bcrypt.hash("Nafis*123", 10);
   await prisma.user.upsert({
     where: { email: "nafisreza@iut-dhaka.edu" },
     update: {},
@@ -103,7 +101,9 @@ async function main() {
     },
   });
 
-  console.log("Seed data created: admin, departments, programs, teacher, student.");
+  console.log(
+    "Seed data created: admin, departments, programs, teacher, student."
+  );
 }
 
 main()
