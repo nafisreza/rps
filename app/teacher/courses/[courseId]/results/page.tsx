@@ -321,6 +321,9 @@ export default function TeacherCourseResultsPage({
                 Total
               </th>
               <th className="px-4 py-3 text-left font-semibold text-blue-900">
+                %
+              </th>
+              <th className="px-4 py-3 text-left font-semibold text-blue-900">
                 Grade
               </th>
               <th className="px-4 py-3 text-left font-semibold text-blue-900">
@@ -469,9 +472,12 @@ export default function TeacherCourseResultsPage({
                       {result.total.toFixed(2)}
                     </td>
                     <td className="px-2 py-2 font-semibold text-blue-900">
+                      {((result.total / (credit * 100)) * 100).toFixed(2)}%
+                    </td>
+                    <td className="px-2 py-2 text-center font-semibold text-blue-900">
                       {result.grade}
                     </td>
-                    <td className="px-2 py-2 font-semibold text-blue-900">
+                    <td className="px-4 py-2 font-semibold text-blue-900">
                       {result.gradePoint.toFixed(2)}
                     </td>
                   </tr>
