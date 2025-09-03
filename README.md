@@ -14,13 +14,18 @@ The IUT Result Processing System (RPS) is a modern web application for managing 
 - Course-wise performance analysis
 - Audit logging and validation
 
+## Usage
+- **Students:** View results, grade sheets, analytics, and download PDFs.
+- **Teachers:** Enter marks, view analytics, submit results for approval, download PDFs.
+- **Admins:** Approve/reject results, manage users/courses, audit logs.
+
 ## Technology Stack
-- Next.js (App Router, React, TypeScript)
-- Prisma ORM with PostgreSQL
-- shadcn/ui for modern UI components
+- Next.js, React, TypeScript
+- PostgreSQL with Prisma
+- shadcn/ui & TailwindCSS for modern UI components
 - Chart.js for analytics and visualizations
 - PDF-lib for PDF generation
-- Docker for local database setup
+- Docker for containerization 
 
 ## Getting Started
 
@@ -76,23 +81,13 @@ public/             # Static assets
 scripts/            # Bulk import and utility scripts
 ```
 
-## Usage
-- **Students:** View results, grade sheets, analytics, and download PDFs.
-- **Teachers:** Enter marks, view analytics, submit results for approval, download PDFs.
-- **Admins:** Approve/reject results, manage users/courses, audit logs.
-
 ## Customization
 - Update `prisma/schema.prisma` for database changes.
 - Modify UI components in `app/components/` and analytics in `app/student/analytics/` and `app/teacher/analytics/`.
 - Add new API routes in `app/api/` as needed.
 
-## Security
-- All sensitive operations require authentication.
-- Role-based access control is enforced throughout the app.
-- Audit logging for result changes and approvals.
-
 ## License
 This project is licensed under the MIT License.
 
-## Contact
-For questions or support, contact the repository owner or open an issue on GitHub.
+## Contribution
+I am open to any feature upgrade or changes. Just open a PR and I will check it out. Thanks for your interest!
