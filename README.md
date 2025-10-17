@@ -88,6 +88,7 @@ scripts/            # Bulk import and utility scripts
 
 ## License
 This project is licensed under the MIT License.
+You can view the full license here: [LICENSE](./LICENSE)
 
 ## Contribution
 I am open to any feature upgrade or changes. Just open a PR and I will check it out. Thanks for your interest!
