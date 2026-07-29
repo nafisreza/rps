@@ -1,0 +1,455 @@
+{
+  "project": "IUT Result Processing System (RPS)",
+  "testCases": [
+    {
+      "id": "TC-01",
+      "title": "Grade scale boundaries map to correct grade and grade point",
+      "type": "Unit",
+      "area": "Grading",
+      "priority": "High",
+      "preconditions": "Grading module lib/grading.ts available.",
+      "steps": [
+        "Call gradeFromPercent() with each boundary percentage: 80, 75, 70, 65, 60, 55, 50, 45, 40.",
+        "Call gradeFromPercent() with values just below each boundary (e.g. 79.99, 39.99)."
+      ],
+      "expected": "80→A+ (4.00), 75→A (3.75), 70→A- (3.50), 65→B+ (3.25), 60→B (3.00), 55→B- (2.75), 50→C+ (2.50), 45→C (2.25), 40→D (2.00); values below 40 → F (0.00). Just-below values fall to the next lower grade.",
+      "automated_in": "tests/unit/grading.test.ts"
+    },
+    {
+      "id": "TC-02",
+      "title": "Attendance mark follows stepped thresholds at 95/90/80/75 percent",
+      "type": "Unit",
+      "area": "Grading",
+      "priority": "High",
+      "preconditions": "Grading module available. attendanceMax = credit×100×0.1.",
+      "steps": [
+        "Compute attendance mark for attendance of 95, 90, 80, 75 and 74 percent with attendanceMax=30."
+      ],
+      "expected": "≥95 → 30 (100%), 90–94 → 24 (80%), 80–89 → 12 (40%), 75–79 → 6 (20%), below 75 → 0.",
+      "automated_in": "tests/unit/grading.test.ts"
+    },
+    {
+      "id": "TC-03",
+      "title": "Best 3 of 4 quiz marks are counted and capped at quiz maximum",
+      "type": "Unit",
+      "area": "Grading",
+      "priority": "High",
+      "preconditions": "Grading module available. quizMax = 3×credit×100×0.05.",
+      "steps": [
+        "Compute a course result with quiz marks 15, 14, 13, 10 (credit 3).",
+        "Compute a course result with quiz marks exceeding the cap (e.g. 20, 20, 20, 20)."
+      ],
+      "expected": "Lowest quiz (10) is dropped: quizMark = 15+14+13 = 42. When the best-3 sum exceeds quizMax (45 for credit 3), the quiz mark is capped at 45.",
+      "automated_in": "tests/unit/grading.test.ts"
+    },
+    {
+      "id": "TC-04",
+      "title": "Midterm and final marks are capped at their maximums",
+      "type": "Unit",
+      "area": "Grading",
+      "priority": "Medium",
+      "preconditions": "Grading module available. midtermMax = 25% and finalMax = 50% of total.",
+      "steps": [
+        "Compute a course result (credit 3) with midterm 100 (max 75) and final 200 (max 150)."
+      ],
+      "expected": "midtermMark is capped at 75 and finalMark at 150; excess input marks do not inflate the total.",
+      "automated_in": "tests/unit/grading.test.ts"
+    },
+    {
+      "id": "TC-05",
+      "title": "Missing marks default to zero and total is the sum of components",
+      "type": "Unit",
+      "area": "Grading",
+      "priority": "Medium",
+      "preconditions": "Grading module available.",
+      "steps": [
+        "Compute a course result with an empty marks object.",
+        "Compute a course result with partial marks and verify total = attendanceMark + quizMark + midtermMark + finalMark."
+      ],
+      "expected": "Empty marks give total 0 and grade F. For partial marks the total equals the exact sum of the four component marks.",
+      "automated_in": "tests/unit/grading.test.ts"
+    },
+    {
+      "id": "TC-06",
+      "title": "Perfect marks produce 100 percent and grade A+",
+      "type": "Unit",
+      "area": "Grading",
+      "priority": "Medium",
+      "preconditions": "Grading module available.",
+      "steps": [
+        "Compute a course result (credit 3) with attendance 100, all four quizzes at 15, midterm 75, final 150."
+      ],
+      "expected": "total = 300 (credit×100), percent = 100, grade A+ with grade point 4.00.",
+      "automated_in": "tests/unit/grading.test.ts"
+    },
+    {
+      "id": "TC-07",
+      "title": "GPA is the credit-weighted mean of grade points",
+      "type": "Unit",
+      "area": "GPA/CGPA",
+      "priority": "High",
+      "preconditions": "Grading module available.",
+      "steps": [
+        "Call computeGpa() with [{gradePoint 4.0, credit 3}, {gradePoint 3.0, credit 1.5}]."
+      ],
+      "expected": "GPA = (4.0×3 + 3.0×1.5) / 4.5 = 3.6667 (weighted, not simple average).",
+      "automated_in": "tests/unit/grading.test.ts"
+    },
+    {
+      "id": "TC-08",
+      "title": "GPA is null when total credits is zero",
+      "type": "Unit",
+      "area": "GPA/CGPA",
+      "priority": "Medium",
+      "preconditions": "Grading module available.",
+      "steps": [
+        "Call computeGpa() with an empty array."
+      ],
+      "expected": "Returns null instead of NaN or a division-by-zero error.",
+      "automated_in": "tests/unit/grading.test.ts"
+    },
+    {
+      "id": "TC-09",
+      "title": "CGPA across semesters with mixed credits matches manual computation",
+      "type": "Unit",
+      "area": "GPA/CGPA",
+      "priority": "High",
+      "preconditions": "Grading module available.",
+      "steps": [
+        "Call computeGpa() with a realistic transcript of 6 courses across two semesters with credits 3, 3, 1.5, 3, 4.5, 1.5 and varied grade points."
+      ],
+      "expected": "The result equals the hand-computed weighted sum ÷ total credits to floating point precision.",
+      "automated_in": "tests/unit/grading.test.ts"
+    },
+    {
+      "id": "TC-10",
+      "title": "generatePassword produces passwords of requested length from the allowed charset",
+      "type": "Unit",
+      "area": "Utilities",
+      "priority": "Low",
+      "preconditions": "lib/utils.ts available.",
+      "steps": [
+        "Call generatePassword() with no argument and with length 20, repeatedly.",
+        "Check every character against the documented charset."
+      ],
+      "expected": "Default length is 12; custom length is honored; all characters come from the allowed charset; consecutive calls differ.",
+      "automated_in": "tests/unit/validation.test.ts"
+    },
+    {
+      "id": "TC-11",
+      "title": "Strong password policy accepts strong passwords and rejects weak ones",
+      "type": "Unit",
+      "area": "Validation",
+      "priority": "High",
+      "preconditions": "lib/validation.ts available.",
+      "steps": [
+        "Test isStrongPassword() with a compliant password (lower+upper+digit+special, ≥8 chars).",
+        "Test with passwords that are too short, missing uppercase, missing digit, or missing special character."
+      ],
+      "expected": "Compliant passwords return true; each weak variant returns false.",
+      "automated_in": "tests/unit/validation.test.ts"
+    },
+    {
+      "id": "TC-12",
+      "title": "IUT email validation accepts only @iut-dhaka.edu addresses",
+      "type": "Unit",
+      "area": "Validation",
+      "priority": "High",
+      "preconditions": "lib/validation.ts available.",
+      "steps": [
+        "Test isIutEmail() with valid IUT addresses and with gmail.com, a spoofed subdomain, and an empty string."
+      ],
+      "expected": "Only well-formed addresses ending exactly in @iut-dhaka.edu are accepted.",
+      "automated_in": "tests/unit/validation.test.ts"
+    },
+    {
+      "id": "TC-13",
+      "title": "Login succeeds with valid admin credentials and issues a session",
+      "type": "API",
+      "area": "Authentication",
+      "priority": "High",
+      "preconditions": "App running on localhost:3000 with seeded database (admin@iut-dhaka.edu / admin123).",
+      "steps": [
+        "GET /api/auth/csrf to obtain a CSRF token.",
+        "POST /api/auth/callback/credentials with the admin email and password.",
+        "Inspect response cookies and GET /api/auth/session with them."
+      ],
+      "expected": "A next-auth session-token cookie is issued and the session endpoint reports the admin user with role ADMIN.",
+      "automated_in": "tests/api/auth.test.ts"
+    },
+    {
+      "id": "TC-14",
+      "title": "Login is rejected with an incorrect password",
+      "type": "API",
+      "area": "Authentication",
+      "priority": "High",
+      "preconditions": "App running with seeded database.",
+      "steps": [
+        "POST /api/auth/callback/credentials with admin email and a wrong password."
+      ],
+      "expected": "No session-token cookie is issued; authentication fails.",
+      "automated_in": "tests/api/auth.test.ts"
+    },
+    {
+      "id": "TC-15",
+      "title": "Admin users API rejects unauthenticated requests",
+      "type": "API",
+      "area": "Authorization",
+      "priority": "High",
+      "preconditions": "App running.",
+      "steps": [
+        "GET /api/admin/users?role=STUDENT without any session cookie."
+      ],
+      "expected": "HTTP 403 Forbidden; no user data is returned.",
+      "automated_in": "tests/api/auth.test.ts"
+    },
+    {
+      "id": "TC-16",
+      "title": "Admin users API returns seeded students for an admin session",
+      "type": "API",
+      "area": "Authorization",
+      "priority": "High",
+      "preconditions": "App running with seeded database; valid admin session.",
+      "steps": [
+        "Log in as admin (TC-13 flow).",
+        "GET /api/admin/users?role=STUDENT with the session cookie."
+      ],
+      "expected": "HTTP 200 with the seeded students, including student ID 20250001 (Nafis Reza).",
+      "automated_in": "tests/api/auth.test.ts"
+    },
+    {
+      "id": "TC-17",
+      "title": "Change-password API rejects unauthenticated requests",
+      "type": "API",
+      "area": "Authentication",
+      "priority": "High",
+      "preconditions": "App running.",
+      "steps": [
+        "POST /api/auth/change-password with a valid strong password but no session cookie."
+      ],
+      "expected": "HTTP 401 Unauthorized; no password is changed.",
+      "automated_in": "tests/api/auth.test.ts"
+    },
+    {
+      "id": "TC-18",
+      "title": "Departments API returns the seeded departments",
+      "type": "API",
+      "area": "Master data",
+      "priority": "Medium",
+      "preconditions": "App running with seeded database.",
+      "steps": [
+        "GET /api/departments."
+      ],
+      "expected": "HTTP 200 with at least the six seeded departments, including CSE.",
+      "automated_in": "tests/api/student.test.ts"
+    },
+    {
+      "id": "TC-19",
+      "title": "Student results API groups courses by semester with GPA and CGPA",
+      "type": "API",
+      "area": "Results",
+      "priority": "High",
+      "preconditions": "Seeded student 20250001 with approved semester-1 results.",
+      "steps": [
+        "Resolve the student's internal id from the database.",
+        "GET /api/student/{id}/results."
+      ],
+      "expected": "Response contains semesters sorted ascending, each with courses (grade + gradePoint) and a per-semester GPA, plus currentSemester=2 and a numeric CGPA.",
+      "automated_in": "tests/api/student.test.ts"
+    },
+    {
+      "id": "TC-20",
+      "title": "Student CGPA API matches the credit-weighted computation from stored results",
+      "type": "API",
+      "area": "GPA/CGPA",
+      "priority": "High",
+      "preconditions": "Seeded student with results in the database.",
+      "steps": [
+        "Read the student's results and course credits directly from the database.",
+        "Compute the expected CGPA with the shared grading module.",
+        "GET /api/student/{id}/cgpa and compare."
+      ],
+      "expected": "The API CGPA equals the independently computed credit-weighted value within 1e-9.",
+      "automated_in": "tests/api/student.test.ts"
+    },
+    {
+      "id": "TC-21",
+      "title": "Student GPA API returns 400 when the semester parameter is missing",
+      "type": "API",
+      "area": "Results",
+      "priority": "Medium",
+      "preconditions": "App running with seeded student.",
+      "steps": [
+        "GET /api/student/{id}/gpa without a semester query parameter."
+      ],
+      "expected": "HTTP 400 with an error message; no GPA row is created.",
+      "automated_in": "tests/api/student.test.ts"
+    },
+    {
+      "id": "TC-22",
+      "title": "Admin can create a course and enroll students in it",
+      "type": "API",
+      "area": "Course management",
+      "priority": "High",
+      "preconditions": "App running with seeded departments, programs, teachers and students.",
+      "steps": [
+        "POST /api/admin/courses with a new course (code SQA 9101, credit 3, semester 2, CSE/SWE, a seeded teacher).",
+        "POST /api/admin/courses/{id}/enroll with three seeded student ids.",
+        "Read enrollments back from the database."
+      ],
+      "expected": "Course is created and exactly the three selected students are enrolled in it.",
+      "automated_in": "tests/api/workflow.test.ts"
+    },
+    {
+      "id": "TC-23",
+      "title": "Saving marks as draft computes results per the grading spec and sets status DRAFT",
+      "type": "API",
+      "area": "Marks workflow",
+      "priority": "High",
+      "preconditions": "Test course from TC-22 with three enrolled students.",
+      "steps": [
+        "POST /api/teacher/courses/{id}/results with marks for each enrollment and submit=false.",
+        "GET /api/teacher/courses/{id}/results and /results/status."
+      ],
+      "expected": "Status is DRAFT. Each stored result's total, grade and gradePoint exactly match the shared grading module for the same inputs.",
+      "automated_in": "tests/api/workflow.test.ts"
+    },
+    {
+      "id": "TC-24",
+      "title": "Submitting marks sets status SUBMITTED and the course appears in the admin approval queue",
+      "type": "API",
+      "area": "Marks workflow",
+      "priority": "High",
+      "preconditions": "Test course with draft results.",
+      "steps": [
+        "POST /api/teacher/courses/{id}/results with the same marks and submit=true.",
+        "GET /api/teacher/courses/{id}/results/status.",
+        "GET /api/admin/results."
+      ],
+      "expected": "Status is SUBMITTED and the test course is listed in the admin approval queue with status \"Submitted\".",
+      "automated_in": "tests/api/workflow.test.ts"
+    },
+    {
+      "id": "TC-25",
+      "title": "Rejecting a submission reverts status to DRAFT and stores the rejection reason",
+      "type": "API",
+      "area": "Marks workflow",
+      "priority": "High",
+      "preconditions": "Test course in SUBMITTED state.",
+      "steps": [
+        "POST /api/admin/results/reject with the courseId and a reason.",
+        "GET /api/teacher/courses/{id}/results/status."
+      ],
+      "expected": "Status returns to DRAFT and the stored rejectionReason equals the submitted reason. Rejecting without a reason returns HTTP 400.",
+      "automated_in": "tests/api/workflow.test.ts"
+    },
+    {
+      "id": "TC-26",
+      "title": "Approving a submission sets status APPROVED and upserts the semester GPA",
+      "type": "API",
+      "area": "Marks workflow",
+      "priority": "High",
+      "preconditions": "Test course re-submitted after rejection.",
+      "steps": [
+        "Re-submit the marks with submit=true.",
+        "POST /api/admin/results with the courseId.",
+        "GET /api/teacher/courses/{id}/results/status and read SemesterGPA rows from the database."
+      ],
+      "expected": "Status is APPROVED and a SemesterGPA row exists for each enrolled student for the course's semester, matching the grading module's computed grade points.",
+      "automated_in": "tests/api/workflow.test.ts"
+    },
+    {
+      "id": "TC-27",
+      "title": "Result PDF endpoint returns a valid PDF document",
+      "type": "API",
+      "area": "PDF generation",
+      "priority": "Medium",
+      "preconditions": "Test course with computed results.",
+      "steps": [
+        "GET /api/teacher/courses/{id}/results/pdf?type=draft.",
+        "Inspect the response content type and leading bytes."
+      ],
+      "expected": "HTTP 200 with Content-Type application/pdf and a body starting with the %PDF magic bytes, non-trivial in size.",
+      "automated_in": "tests/api/workflow.test.ts"
+    },
+    {
+      "id": "TC-28",
+      "title": "Login page renders branding and the login form",
+      "type": "E2E",
+      "area": "UI/Login",
+      "priority": "Medium",
+      "preconditions": "App running on localhost:3000.",
+      "steps": [
+        "Open / in a browser.",
+        "Check for the heading, email input, password input, Login button and Forgot password link."
+      ],
+      "expected": "\"IUT Result Processing System\" heading and the complete login form are visible.",
+      "automated_in": "tests/e2e/auth.spec.ts"
+    },
+    {
+      "id": "TC-29",
+      "title": "Login with a non-IUT email is rejected client-side",
+      "type": "E2E",
+      "area": "UI/Login",
+      "priority": "High",
+      "preconditions": "App running.",
+      "steps": [
+        "Open /, enter someone@gmail.com and any password, click Login."
+      ],
+      "expected": "Toast \"Please enter your IUT email.\" appears, the form is cleared and no navigation happens.",
+      "automated_in": "tests/e2e/auth.spec.ts"
+    },
+    {
+      "id": "TC-30",
+      "title": "Login with invalid credentials shows an error toast",
+      "type": "E2E",
+      "area": "UI/Login",
+      "priority": "High",
+      "preconditions": "App running with seeded database.",
+      "steps": [
+        "Open /, enter admin@iut-dhaka.edu with a wrong password, click Login."
+      ],
+      "expected": "Toast \"Incorrect email or password\" appears and the user stays on the login page.",
+      "automated_in": "tests/e2e/auth.spec.ts"
+    },
+    {
+      "id": "TC-31",
+      "title": "Admin login redirects to the admin dashboard",
+      "type": "E2E",
+      "area": "UI/Login",
+      "priority": "High",
+      "preconditions": "App running; seeded admin (admin@iut-dhaka.edu / admin123).",
+      "steps": [
+        "Open /, log in with the admin credentials."
+      ],
+      "expected": "Browser is redirected to /admin and the admin dashboard renders.",
+      "automated_in": "tests/e2e/auth.spec.ts"
+    },
+    {
+      "id": "TC-32",
+      "title": "Unauthenticated access to the admin area redirects to login",
+      "type": "E2E",
+      "area": "Authorization",
+      "priority": "High",
+      "preconditions": "App running; no session.",
+      "steps": [
+        "Open /admin directly in a fresh browser context."
+      ],
+      "expected": "The server redirects to the login page (/); no admin content is shown.",
+      "automated_in": "tests/e2e/auth.spec.ts"
+    },
+    {
+      "id": "TC-33",
+      "title": "First-login student is forced to the change-password page",
+      "type": "E2E",
+      "area": "Authentication",
+      "priority": "High",
+      "preconditions": "Seeded student nafisreza@iut-dhaka.edu / Nafis*123 with mustChangePassword=true.",
+      "steps": [
+        "Open /, log in with the seeded student credentials."
+      ],
+      "expected": "Browser is redirected to /auth/change-password instead of the student dashboard.",
+      "automated_in": "tests/e2e/auth.spec.ts"
+    }
+  ]
+}

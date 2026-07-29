@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { computeCourseResult, MarksInput } from "@/lib/grading";
 
 const prisma = new PrismaClient();
 
@@ -39,46 +40,8 @@ export async function POST(req: NextRequest, context: { params: Promise<{ course
   const credit = courseObj?.credit || 3;
 
   for (const [enrollmentId, mRaw] of Object.entries(marks)) {
-    const m = (typeof mRaw === 'object' && mRaw !== null ? mRaw : {}) as {
-      attendance?: number;
-      quiz1?: number;
-      quiz2?: number;
-      quiz3?: number;
-      quiz4?: number;
-      midterm?: number;
-      final?: number;
-    };
-    const totalMark = credit * 100;
-    const attendanceMax = totalMark * 0.1;
-    const quizMax = 3 * credit * 100 * 0.05;
-    const midtermMax = totalMark * 0.25;
-    const finalMax = totalMark * 0.5;
-
-  let attendanceMark = 0;
-  const attendancePercent = m.attendance || 0;
-  if (attendancePercent >= 95) attendanceMark = attendanceMax;
-  else if (attendancePercent >= 90) attendanceMark = attendanceMax * 0.8;
-  else if (attendancePercent >= 80) attendanceMark = attendanceMax * 0.4;
-  else if (attendancePercent >= 75) attendanceMark = attendanceMax * 0.2;
-  else attendanceMark = 0;
-    const quizzes = [m.quiz1 || 0, m.quiz2 || 0, m.quiz3 || 0, m.quiz4 || 0].sort((a, b) => b - a).slice(0, 3);
-    const quizMark = Math.min(quizzes.reduce((a, b) => a + b, 0), quizMax);
-    const midtermMark = Math.min(m.midterm || 0, midtermMax);
-    const finalMark = Math.min(m.final || 0, finalMax);
-    const total = attendanceMark + quizMark + midtermMark + finalMark;
-
-    let grade = "F", gradePoint = 0;
-    const percent = (total / totalMark) * 100;
-    
-    if (percent >= 80) [grade, gradePoint] = ["A+", 4.0];
-    else if (percent >= 75) [grade, gradePoint] = ["A", 3.75];
-    else if (percent >= 70) [grade, gradePoint] = ["A-", 3.5];
-    else if (percent >= 65) [grade, gradePoint] = ["B+", 3.25];
-    else if (percent >= 60) [grade, gradePoint] = ["B", 3.0];
-    else if (percent >= 55) [grade, gradePoint] = ["B-", 2.75];
-    else if (percent >= 50) [grade, gradePoint] = ["C+", 2.5];
-    else if (percent >= 45) [grade, gradePoint] = ["C", 2.25];
-    else if (percent >= 40) [grade, gradePoint] = ["D", 2.0];
+    const m = (typeof mRaw === 'object' && mRaw !== null ? mRaw : {}) as MarksInput;
+    const { total, grade, gradePoint } = computeCourseResult(credit, m);
 
     const data = {
       attendance: m.attendance ?? 0,

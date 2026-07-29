@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../[...nextauth]/route";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
+import { isStrongPassword } from "@/lib/validation";
 
 const prisma = new PrismaClient();
 
@@ -14,7 +15,7 @@ export async function POST(req: Request) {
   if (!password || password.length < 8) {
     return new Response("Password too short", { status: 400 });
   }
-  const strong = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/.test(password);
+  const strong = isStrongPassword(password);
   if (!strong) {
     return new Response("Password not strong enough", { status: 400 });
   }

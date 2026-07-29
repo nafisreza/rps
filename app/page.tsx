@@ -5,6 +5,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { isIutEmail } from "@/lib/validation";
 
 export default function Home() {
   const [email, setEmail] = useState("");
@@ -17,8 +18,7 @@ export default function Home() {
     setLoading(true);
     e.preventDefault();
     // Email regex validation for IUT emails
-    const iutEmailRegex = /^[a-zA-Z0-9._%+-]+@iut-dhaka\.edu$/;
-    if (!iutEmailRegex.test(email)) {
+    if (!isIutEmail(email)) {
       toast.error("Please enter your IUT email.");
       setEmail("");
       setPassword("");
